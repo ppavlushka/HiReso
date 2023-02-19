@@ -14,7 +14,7 @@ const SearchForm = ({ searchUrl = "", isSearching, onSubmit = () => {} }) => {
   return (
     <form
       onSubmit={handleSearch}
-      className="flex flex-wrap justify-center sm:items-stretch sm:w-full sm:max-w-xl md:max-w-2xl text-xl leading-tight"
+      className="flex flex-wrap justify-center sm:items-stretch w-full md:max-w-2xl text-xl leading-tight"
     >
       <input
         type="url"

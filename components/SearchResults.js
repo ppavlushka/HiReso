@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const SearchResults = ({ imageUrl, links, onSelect = () => {} }) => {
   return (
-    <div className="max-w-screen-lg mx-auto">
+    <div className="w-full md:max-w-2xl lg:max-w-screen-lg mx-auto">
       <div className="text-lg font-medium mb-3">Preview</div>
       <div className="relative w-full aspect-video mb-12">
         <Image
@@ -11,6 +11,7 @@ const SearchResults = ({ imageUrl, links, onSelect = () => {} }) => {
           style={{ objectFit: "cover", objectPosition: "center" }}
           alt="Image"
           priority
+          unoptimized
         />
       </div>
       <div className="text-lg font-medium mb-3">Download Links:</div>

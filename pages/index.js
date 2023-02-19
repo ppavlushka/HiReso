@@ -57,7 +57,7 @@ export default function Home() {
         />
       </div>
       {!!result && (
-        <div className="relative flex-1 bg-custom-dark text-white px-3 py-6">
+        <div className="relative flex-1 flex items-center  bg-custom-dark text-white px-3 py-6">
           {selectedImage ? (
             <Image
               src={selectedImage.link}
