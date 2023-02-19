@@ -17,8 +17,9 @@ module.exports = {
       colors: {
         gray: colors.neutral,
         "custom-blue": "#4789F4",
-        "custom-gray": "#F5F5F5",
+        "custom-lightgray": "#F5F5F5",
         "custom-darkgray": "#2A2A2C",
+        "custom-dark": "#1E1E1E",
       },
       borderColor: {
         DEFAULT: "#CCCCCC",
