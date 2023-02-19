@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  a {
+    @apply underline text-slate-400;
+  }
+  a:hover {
+    @apply text-sky-400 opacity-90;
+  }
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
