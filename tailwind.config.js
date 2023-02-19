@@ -16,6 +16,12 @@ module.exports = {
     extend: {
       colors: {
         gray: colors.neutral,
+        "custom-blue": "#4789F4",
+        "custom-gray": "#F5F5F5",
+        "custom-darkgray": "#2A2A2C",
+      },
+      borderColor: {
+        DEFAULT: "#CCCCCC",
       },
       fontFamily: {
         // to change, update font in _document.js

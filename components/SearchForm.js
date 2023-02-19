@@ -13,18 +13,21 @@ const SearchForm = () => {
   };
 
   return (
-    <form className="flex justify-center items-center h-screen">
-      <div className="flex items-center">
+    <form
+      className="flex justify-center items-center h-screen"
+      onSubmit={handleSearch}
+    >
+      <div className="flex flex-wrap justify-center sm:items-stretch sm:w-full sm:max-w-xl md:max-w-2xl">
         <input
           type="text"
-          className="px-4 py-2 border outline-none"
-          value={searchValue}
+          className="px-5 py-4 border placeholder:text-gray-900 text-xl outline-none w-full sm:flex-1 sm:w-auto"
+          defaultValue={searchValue}
           onChange={handleInputChange}
-          placeholder="Search..."
+          placeholder="Enter image URL"
         />
         <button
-          className="px-4 py-2 bg-blue-500 text-white"
-          onClick={handleSearch}
+          type="submit"
+          className="mt-3 sm:mt-0 px-8 py-4 bg-custom-blue hover:bg-blue-600 text-xl text-white w-full sm:w-auto"
         >
           Search
         </button>
