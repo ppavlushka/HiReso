@@ -6,22 +6,34 @@ import CustomHead from "../components/CustomHead";
 import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
 
+import { ToastContainer, toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
+
 export default function Home() {
   const [searchUrl, setSearchUrl] = useState(
     "https://img1.goodfon.com/original/5616x3744/2/1e/kofe-napitok-sahar-chashka.jpg"
   );
   const [isSearching, setIsSearching] = useState(false);
-  const [error, setError] = useState(null);
+  //const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
 
   const fetchData = async (searchUrl) => {
+    toast.dismiss();
     try {
       setIsSearching(true);
       const result = await search(searchUrl);
       setResult(result);
     } catch (error) {
-      setError(error);
+      const message =
+        (error &&
+          error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        "Something went wrong!";
+      toast.error(message);
+      //setError(error);
     }
     setIsSearching(false);
     setSelectedIndex(null);
@@ -75,6 +87,7 @@ export default function Home() {
           )}
         </div>
       )}
+      <ToastContainer position="bottom-right" theme="dark" />
     </div>
   );
 }
