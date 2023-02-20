@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 
 const SearchForm = ({ searchUrl = "", isSearching, onSubmit = () => {} }) => {
+  const [search, setSearch] = useState(searchUrl);
   const handleInputChange = (event) => {
-    setSearchValue(event.target.value);
+    setSearch(event.target.value);
   };
 
   const handleSearch = (event) => {
     event.preventDefault();
-    onSubmit(searchUrl);
-    console.log(searchUrl); // replace with actual search logic
+    onSubmit(search);
   };
 
   return (

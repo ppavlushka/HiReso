@@ -1,19 +1,16 @@
 import React, { useState } from "react";
 import Image from "next/image";
 //import styles from "../styles/Home.module.css";
-import { search } from "../lib/dummy-api";
+import { search } from "../lib/search";
 import CustomHead from "../components/CustomHead";
 import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
 
 import { ToastContainer, toast } from "react-toastify";
-
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
-  const [searchUrl, setSearchUrl] = useState(
-    "https://img1.goodfon.com/original/5616x3744/2/1e/kofe-napitok-sahar-chashka.jpg"
-  );
+  const [searchUrl, setSearchUrl] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   //const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
@@ -46,7 +43,14 @@ export default function Home() {
 
   const links =
     result && Array.isArray(result.image_results)
-      ? result.image_results.map(({ original_image }) => original_image)
+      ? result.image_results
+          .map(({ original_image }) => original_image)
+          .sort((link1, link2) => {
+            if (link1.width === link2.width) {
+              return link1.height > link2.height ? -1 : 1;
+            }
+            return link1.width > link2.width ? -1 : 1;
+          })
       : [];
   const selectedImage = links[selectedIndex];
   const handleSelect = (index) => {
