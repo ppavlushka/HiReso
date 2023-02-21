@@ -41,17 +41,7 @@ export default function Home() {
     fetchData(url);
   };
 
-  const links =
-    result && Array.isArray(result.image_results)
-      ? result.image_results
-          .map(({ original_image }) => original_image)
-          .sort((link1, link2) => {
-            if (link1.width === link2.width) {
-              return link1.height > link2.height ? -1 : 1;
-            }
-            return link1.width > link2.width ? -1 : 1;
-          })
-      : [];
+  const links = result && Array.isArray(result.images) ? result.images : [];
   const selectedImage = links[selectedIndex];
   const handleSelect = (index) => {
     setSelectedIndex(index);
