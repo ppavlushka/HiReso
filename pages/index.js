@@ -63,7 +63,7 @@ export default function Home() {
       <div
         className={
           "flex justify-center items-center px-3 " +
-          (result ? "py-5 bg-custom-lightgray" : "h-screen")
+          (result ? "py-5 bg-custom-lightgray dark:bg-gray-700" : "h-screen")
         }
       >
         <SearchForm

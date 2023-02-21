@@ -19,7 +19,7 @@ const SearchResults = ({ imageUrl, links, onSelect = () => {}, limit = 6 }) => {
         {links.slice(0, limit).map((link, index) => (
           <button
             key={index}
-            className="px-8 py-4 bg-custom-darkgray text-white text-center"
+            className="px-8 py-4 bg-custom-darkgray hover:bg-gray-700 transition-colors text-white text-center"
             onClick={(evt) => onSelect(index)}
           >
             {link.width}x{link.height}

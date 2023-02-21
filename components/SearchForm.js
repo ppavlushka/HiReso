@@ -18,7 +18,7 @@ const SearchForm = ({ searchUrl = "", isSearching, onSubmit = () => {} }) => {
     >
       <input
         type="url"
-        className="px-5 py-4 border placeholder:text-gray-900 outline-none w-full sm:flex-1 sm:w-auto disabled:opacity-75 disabled:pointer-events-none"
+        className="px-5 py-4 border placeholder:text-gray-900 dark:placeholder:text-white outline-none w-full sm:flex-1 sm:w-auto disabled:opacity-75 disabled:pointer-events-none"
         defaultValue={searchUrl}
         onChange={handleInputChange}
         placeholder="Enter image URL"
