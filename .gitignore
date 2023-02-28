@@ -18,6 +18,7 @@ stablo-1.0.0/
 
 # misc
 .DS_Store
+.nvmrc
 
 # debug
 npm-debug.log*
