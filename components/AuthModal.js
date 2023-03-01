@@ -7,7 +7,7 @@ import * as Yup from "yup";
 import { toast } from "react-hot-toast";
 import { Formik, Form } from "formik";
 import { Dialog, Transition } from "@headlessui/react";
-import { SparklesIcon, MailOpenIcon, XIcon } from "@heroicons/react/outline";
+import { MailOpenIcon, XIcon } from "@heroicons/react/outline";
 import Input from "./Input";
 
 const SignInSchema = Yup.object().shape({

@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/outline";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import CustomHead from "../components/CustomHead";
+import Logo from "../components/Logo";
 
 const menuItems = [
   {
@@ -50,13 +51,7 @@ const Layout = ({ children = null, mainClassName = "" }) => {
           <div className="h-full mx-auto">
             <div className="h-full px-10 py-6 flex justify-between items-center space-x-4">
               <Link href="/" className="flex items-center space-x-1">
-                <Image
-                  src="/img/logo.svg"
-                  alt="Logo image"
-                  width={179}
-                  height={56}
-                  className="shrink-0"
-                />
+                <Logo className="shrink-0" />
               </Link>
               <div className="flex items-center space-x-2">
                 {isLoadingUser ? (
