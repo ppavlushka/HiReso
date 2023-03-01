@@ -9,7 +9,11 @@ import SearchResults from "../components/SearchResults";
 import { toast } from "react-hot-toast";
 
 export default function Home() {
-  const [searchUrl, setSearchUrl] = useState("");
+  const [searchUrl, setSearchUrl] = useState(
+    process.env.NODE_ENV === "production"
+      ? ""
+      : "https://www.shutterstock.com/shutterstock/photos/1922207963/display_1500/stock-photo-beautiful-attractive-stylish-woman-in-yellow-dress-and-straw-hat-holding-daisy-flower-romantic-mood-1922207963.jpg"
+  );
   const [isSearching, setIsSearching] = useState(false);
   //const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
