@@ -6,8 +6,7 @@ import CustomHead from "../components/CustomHead";
 import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-hot-toast";
 
 export default function Home() {
   const [searchUrl, setSearchUrl] = useState("");
@@ -81,7 +80,6 @@ export default function Home() {
           )}
         </div>
       )}
-      <ToastContainer position="bottom-right" theme="dark" />
     </div>
   );
 }
