@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import Layout from "../components/Layout";
+import { toast } from "react-hot-toast";
 //import styles from "../styles/Home.module.css";
 import { search } from "../lib/search";
-import CustomHead from "../components/CustomHead";
 import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
-
-import { toast } from "react-hot-toast";
 
 export default function Home() {
   const [searchUrl, setSearchUrl] = useState(
@@ -51,21 +50,16 @@ export default function Home() {
   };
 
   return (
-    <div className={!!result ? "flex flex-col min-h-screen" : ""}>
-      <CustomHead />
-      <div
-        className={
-          "flex justify-center items-center px-3 " +
-          (result ? "py-5 bg-custom-lightgray dark:bg-gray-700" : "h-screen")
-        }
-      >
-        <SearchForm
-          searchUrl={searchUrl}
-          isSearching={isSearching}
-          onSubmit={handleSubmit}
-        />
-      </div>
-      {!!result && (
+    <Layout mainClassName="flex align-items-center">
+      {!result ? (
+        <div className={"w-full flex justify-center items-center py-5 "}>
+          <SearchForm
+            searchUrl={searchUrl}
+            isSearching={isSearching}
+            onSubmit={handleSubmit}
+          />
+        </div>
+      ) : (
         <div className="relative flex-1 flex items-center  bg-custom-dark text-white px-3 py-6">
           {selectedImage ? (
             <Image
@@ -84,6 +78,6 @@ export default function Home() {
           )}
         </div>
       )}
-    </div>
+    </Layout>
   );
 }

@@ -1,13 +1,19 @@
+import "../styles/globals.css";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "next-themes";
-import "../styles/globals.css";
+import { SessionProvider as AuthProvider } from "next-auth/react";
 
-export default function App({ Component, pageProps }) {
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}) {
   return (
     <>
-      <ThemeProvider attribute="class">
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <AuthProvider session={session}>
+        <ThemeProvider attribute="class">
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </AuthProvider>
       <Toaster />
     </>
   );

@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 
-const SearchForm = ({ searchUrl = "", isSearching, onSubmit = () => {} }) => {
+const SearchForm = ({
+  searchUrl = "",
+  isSearching,
+  onSubmit = () => {},
+  className = "",
+}) => {
   const [search, setSearch] = useState(searchUrl);
   const handleInputChange = (event) => {
     setSearch(event.target.value);
@@ -14,11 +19,14 @@ const SearchForm = ({ searchUrl = "", isSearching, onSubmit = () => {} }) => {
   return (
     <form
       onSubmit={handleSearch}
-      className="flex flex-wrap justify-center sm:items-stretch w-full md:max-w-2xl text-xl leading-tight"
+      className={
+        "flex flex-wrap justify-center sm:items-stretch w-full md:max-w-2xl text-xl leading-tight" +
+        className
+      }
     >
       <input
         type="url"
-        className="px-5 py-4 border placeholder:text-gray-900 dark:placeholder:text-white outline-none w-full sm:flex-1 sm:w-auto disabled:opacity-75 disabled:pointer-events-none"
+        className="px-5 py-4 border placeholder:text-gray-900 outline-none w-full sm:flex-1 sm:w-auto disabled:opacity-75 disabled:pointer-events-none"
         defaultValue={searchUrl}
         onChange={handleInputChange}
         placeholder="Enter image URL"

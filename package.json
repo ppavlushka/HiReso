@@ -7,7 +7,7 @@
     "export": "next export"
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.10",
+    "@headlessui/react": "^1.4.3",
     "@heroicons/react": "^1.0.5",
     "@next-auth/prisma-adapter": "^1.0.5",
     "@prisma/client": "^4.11.0",

@@ -16,7 +16,8 @@ module.exports = {
     extend: {
       colors: {
         gray: colors.neutral,
-        "custom-blue": "#4789F4",
+        "custom-blue": "#167BEF",
+        "custom-hoverblue": "#0062D2",
         "custom-lightgray": "#F5F5F5",
         "custom-darkgray": "#2A2A2C",
         "custom-dark": "#1E1E1E",
@@ -40,5 +41,8 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/aspect-ratio"),
+  ],
 };
