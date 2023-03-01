@@ -20,13 +20,13 @@ const SearchForm = ({
     <form
       onSubmit={handleSearch}
       className={
-        "flex flex-wrap justify-center sm:items-stretch w-full md:max-w-2xl text-xl leading-tight" +
+        "flex flex-wrap justify-center sm:items-stretch w-full md:max-w-xl leading-tight" +
         className
       }
     >
       <input
         type="url"
-        className="px-5 py-4 border placeholder:text-gray-900 outline-none w-full sm:flex-1 sm:w-auto disabled:opacity-75 disabled:pointer-events-none"
+        className="px-5 py-3 border border-custom-border text-custom-inputtext placeholder:text-custom-placeholder bg-custom-inputbg  outline-none w-full sm:flex-1 sm:w-auto disabled:opacity-75 disabled:pointer-events-none rounded-[5px] sm:rounded-r-none"
         defaultValue={searchUrl}
         onChange={handleInputChange}
         placeholder="Enter image URL"
@@ -35,10 +35,10 @@ const SearchForm = ({
       />
       <button
         type="submit"
-        className="mt-3 sm:mt-0 px-8 py-4 bg-custom-blue hover:bg-blue-600 text-white w-full sm:w-auto disabled:opacity-75 disabled:pointer-events-none"
+        className="mt-3 sm:mt-0 px-7 py-3 bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white w-full sm:w-auto disabled:opacity-75 disabled:pointer-events-none rounded-[5px] sm:rounded-l-none transition-colors"
         disabled={isSearching}
       >
-        {isSearching ? <span>Wait...</span> : <span>Search</span>}
+        {isSearching ? "Wait..." : "Search"}
       </button>
     </form>
   );

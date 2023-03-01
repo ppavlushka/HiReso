@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import { search } from "../lib/search";
 import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
+import Logo from "../components/Logo";
 
 export default function Home() {
   const [searchUrl, setSearchUrl] = useState(
@@ -52,7 +53,10 @@ export default function Home() {
   return (
     <Layout mainClassName="flex align-items-center">
       {!result ? (
-        <div className={"w-full flex justify-center items-center py-5 "}>
+        <div
+          className={"w-full flex flex-col justify-center items-center py-5 "}
+        >
+          <Logo className="mb-16"/>
           <SearchForm
             searchUrl={searchUrl}
             isSearching={isSearching}

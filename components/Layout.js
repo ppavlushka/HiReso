@@ -53,7 +53,7 @@ const Layout = ({ children = null, mainClassName = "" }) => {
               <Link href="/" className="flex items-center space-x-1">
                 <Logo className="shrink-0" />
               </Link>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2.5">
                 {isLoadingUser ? (
                   <div className="h-8 w-[75px] bg-gray-200 animate-pulse rounded" />
                 ) : user ? (
@@ -139,14 +139,14 @@ const Layout = ({ children = null, mainClassName = "" }) => {
                       onClick={() => {
                         session?.user ? router.push("/create") : openModal();
                       }}
-                      className="hidden sm:block px-5 py-3  hover:text-custom-blue transition rounded"
+                      className="hidden sm:block px-5 py-3 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition rounded-[5px]"
                     >
                       Login
                     </button>
                     <button
                       type="button"
                       onClick={openModal}
-                      className="ml-2 px-5 py-3 rounded bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white transition"
+                      className="ml-2.5 px-5 py-3 rounded-[5px] bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white transition-colors"
                     >
                       Sign Up
                     </button>
