@@ -7,15 +7,15 @@ import PropTypes from "prop-types";
 import { useSession, signOut } from "next-auth/react";
 import AuthModal from "./AuthModal";
 import { Menu, Transition } from "@headlessui/react";
-import { UserIcon } from "@heroicons/react/outline";
-import { ChevronDownIcon } from "@heroicons/react/solid";
+import { UserIcon, ChevronRightIcon } from "@heroicons/react/outline";
+//import { ChevronRightIcon } from "@heroicons/react/solid";
 import CustomHead from "../components/CustomHead";
 import Logo from "../components/Logo";
 
 const menuItems = [
   {
     label: "My profile",
-    href: "/create",
+    href: "/",
   },
   {
     label: "Logout",
@@ -61,7 +61,10 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
                 ) : user ? (
                   <Menu as="div" className="relative z-50">
                     <Menu.Button className="flex items-center space-x-px group">
-                      <div className="shrink-0 flex items-center justify-center rounded-full overflow-hidden relative bg-gray-200 w-9 h-9">
+                      <div className="text-xs text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue px-2.5 py-1 rounded-[20px] border border-white translate-x-2.5 z-10 relative">
+                        5 <span class="hidden sm:inline">Downloads</span>
+                      </div>
+                      <div className="shrink-0 flex items-center justify-center rounded-full overflow-hidden relative bg-gray-200 w-12 h-12">
                         {user?.image ? (
                           <Image
                             src={user?.image}
@@ -69,10 +72,10 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
                             fill
                           />
                         ) : (
-                          <UserIcon className="text-gray-400 w-6 h-6" />
+                          <UserIcon className="text-gray-400 w-12 h-12" />
                         )}
                       </div>
-                      <ChevronDownIcon className="w-5 h-5 shrink-0 text-gray-500 group-hover:text-current" />
+                      {/* <ChevronRightIcon className="w-5 h-5 shrink-0 text-gray-500 group-hover:text-current" /> */}
                     </Menu.Button>
                     <Transition
                       as={Fragment}
@@ -83,8 +86,16 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
                       leaveFrom="opacity-100 scale-100"
                       leaveTo="opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 w-72 overflow-hidden mt-1 divide-y divide-gray-100 origin-top-right bg-white rounded shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <div className="flex items-center space-x-2 py-4 px-4 mb-2">
+                      <Menu.Items className="px-5 absolute right-0 w-48 mt-4 border-4 border-custom-inputbg dark:border-gray-600 bg-white dark:bg-black origin-top-right rounded-[3px] focus:outline-none">
+                        <div
+                          class="w-0 h-0 
+                            absolute z-10 -top-2.5 right-2.5
+                            border-l-[8px] border-l-transparent
+                            border-b-[8px] border-b-custom-inputbg dark:border-b-gray-600
+                            border-r-[8px] border-r-transparent
+                              "
+                        ></div>
+                        {/*  <div className="flex items-center space-x-2 py-4 px-4 mb-2">
                           <div className="shrink-0 flex items-center justify-center rounded-full overflow-hidden relative bg-gray-200 w-9 h-9">
                             {user?.image ? (
                               <Image
@@ -102,34 +113,33 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
                               {user?.email}
                             </span>
                           </div>
-                        </div>
+                        </div> */}
 
-                        <div className="py-2">
-                          {menuItems.map(({ label, href, onClick }) => (
-                            <div
-                              key={label}
-                              className="px-2 last:border-t last:pt-2 last:mt-2"
-                            >
-                              <Menu.Item>
-                                {href ? (
-                                  <Link
-                                    href={href}
-                                    className="flex items-center space-x-2 py-2 px-4 rounded hover:bg-gray-100"
-                                  >
-                                    <span>{label}</span>
-                                  </Link>
-                                ) : (
-                                  <button
-                                    className="w-full flex items-center space-x-2 py-2 px-4 rounded hover:bg-gray-100"
-                                    onClick={onClick}
-                                  >
-                                    <span>{label}</span>
-                                  </button>
-                                )}
-                              </Menu.Item>
-                            </div>
-                          ))}
-                        </div>
+                        {menuItems.map(({ label, href, onClick }) => {
+                          const icon = (
+                            <ChevronRightIcon className="w-5 h-5 shrink-0 text-black dark:text-white group-hover:text-current" />
+                          );
+                          const linkClasses =
+                            "w-full last:border-t dark:border-gray-600 flex items-center justify-between space-x-2 py-4 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition";
+                          return (
+                            <Menu.Item key={label}>
+                              {href ? (
+                                <Link href={href} className={linkClasses}>
+                                  <span>{label}</span>
+                                  {icon}
+                                </Link>
+                              ) : (
+                                <button
+                                  className={linkClasses}
+                                  onClick={onClick}
+                                >
+                                  <span>{label}</span>
+                                  {icon}
+                                </button>
+                              )}
+                            </Menu.Item>
+                          );
+                        })}
                       </Menu.Items>
                     </Transition>
                   </Menu>
