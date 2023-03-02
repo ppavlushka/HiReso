@@ -1,20 +1,13 @@
 import { Fragment, useState } from "react";
 import { useRouter } from "next/router";
-import Head from "next/head";
+//import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import PropTypes from "prop-types";
 import { useSession, signOut } from "next-auth/react";
 import AuthModal from "./AuthModal";
 import { Menu, Transition } from "@headlessui/react";
-import {
-  HeartIcon,
-  HomeIcon,
-  LogoutIcon,
-  PlusIcon,
-  SparklesIcon,
-  UserIcon,
-} from "@heroicons/react/outline";
+import { UserIcon } from "@heroicons/react/outline";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import CustomHead from "../components/CustomHead";
 import Logo from "../components/Logo";
@@ -38,8 +31,12 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
   const isLoadingUser = status === "loading";
 
   const [showModal, setShowModal] = useState(false);
+  const [showSignIn, setShowSignIn] = useState(false);
 
-  const openModal = () => setShowModal(true);
+  const openModal = (params) => {
+    setShowSignIn(params?.showSignIn);
+    setShowModal(true);
+  };
   const closeModal = () => setShowModal(false);
 
   return (
@@ -108,32 +105,30 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
                         </div>
 
                         <div className="py-2">
-                          {menuItems.map(
-                            ({ label, href, onClick, icon: Icon }) => (
-                              <div
-                                key={label}
-                                className="px-2 last:border-t last:pt-2 last:mt-2"
-                              >
-                                <Menu.Item>
-                                  {href ? (
-                                    <Link
-                                      href={href}
-                                      className="flex items-center space-x-2 py-2 px-4 rounded hover:bg-gray-100"
-                                    >
-                                      <span>{label}</span>
-                                    </Link>
-                                  ) : (
-                                    <button
-                                      className="w-full flex items-center space-x-2 py-2 px-4 rounded hover:bg-gray-100"
-                                      onClick={onClick}
-                                    >
-                                      <span>{label}</span>
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                              </div>
-                            )
-                          )}
+                          {menuItems.map(({ label, href, onClick }) => (
+                            <div
+                              key={label}
+                              className="px-2 last:border-t last:pt-2 last:mt-2"
+                            >
+                              <Menu.Item>
+                                {href ? (
+                                  <Link
+                                    href={href}
+                                    className="flex items-center space-x-2 py-2 px-4 rounded hover:bg-gray-100"
+                                  >
+                                    <span>{label}</span>
+                                  </Link>
+                                ) : (
+                                  <button
+                                    className="w-full flex items-center space-x-2 py-2 px-4 rounded hover:bg-gray-100"
+                                    onClick={onClick}
+                                  >
+                                    <span>{label}</span>
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            </div>
+                          ))}
                         </div>
                       </Menu.Items>
                     </Transition>
@@ -142,7 +137,9 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
                   <>
                     <button
                       onClick={() => {
-                        session?.user ? router.push("/create") : openModal();
+                        session?.user
+                          ? router.push("/create")
+                          : openModal({ showSignIn: true });
                       }}
                       className="hidden sm:block px-5 py-3 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition rounded-[5px]"
                     >
@@ -150,7 +147,7 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
                     </button>
                     <button
                       type="button"
-                      onClick={openModal}
+                      onClick={() => openModal({ showSignIn: false })}
                       className="ml-2.5 px-5 py-3 rounded-[5px] bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white transition-colors"
                     >
                       Sign Up
@@ -171,7 +168,12 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
           {typeof children === "function" ? children(openModal) : children}
         </main>
 
-        <AuthModal show={showModal} onClose={closeModal} />
+        <AuthModal
+          show={showModal}
+          onClose={closeModal}
+          showSignIn={showSignIn}
+          setShowSignIn={setShowSignIn}
+        />
       </div>
     </>
   );

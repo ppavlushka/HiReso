@@ -27,6 +27,8 @@ module.exports = {
         "custom-inputtext": "#626262",
         "custom-border": "#EEEEEE",
         danger: "#FF3333",
+        "dialog-overlay": "#167BEF80",
+        muted: "#A6A6A6",
       },
       borderColor: {
         DEFAULT: "#EEEEEE",

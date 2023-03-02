@@ -7,7 +7,7 @@ import * as Yup from "yup";
 import { toast } from "react-hot-toast";
 import { Formik, Form } from "formik";
 import { Dialog, Transition } from "@headlessui/react";
-import { MailOpenIcon, XIcon } from "@heroicons/react/outline";
+import { XIcon } from "@heroicons/react/outline";
 import Input from "./Input";
 
 const SignInSchema = Yup.object().shape({
@@ -17,7 +17,12 @@ const SignInSchema = Yup.object().shape({
     .required("This field is required"),
 });
 
-const Confirm = ({ show = false, email = "" }) => (
+const Confirm = ({
+  show = false,
+  email = "",
+  onCancel = () => null,
+  onRetry = () => null,
+}) => (
   <Transition appear show={show} as={Fragment}>
     <div className="fixed inset-0 z-50">
       <Transition.Child
@@ -29,7 +34,7 @@ const Confirm = ({ show = false, email = "" }) => (
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <div className="fixed inset-0 bg-white" />
+        <div className="fixed inset-0 bg-white dark:bg-black" />
       </Transition.Child>
 
       <Transition.Child
@@ -41,21 +46,36 @@ const Confirm = ({ show = false, email = "" }) => (
         leaveFrom="opacity-100 scale-100"
         leaveTo="opacity-0 scale-95"
       >
-        <div className="flex items-center justify-center h-full p-8">
+        <div className="flex items-center justify h-full  p-8">
           <div className="overflow-hidden transition-all transform">
-            <h3 className="text-center text-lg font-medium leading-6">
-              <div className="flex flex-col justify-center items-center space-y-4">
-                <MailOpenIcon className="w-12 h-12 shrink-0 text-custom-blue" />
-              </div>
-              <p className="text-2xl font-semibold mt-2">Confirm your email</p>
-            </h3>
-
-            <p className="text-lg text-center mt-4">
-              We emailed a magic link to <strong>{email ?? ""}</strong>.
-              <br />
-              Check your inbox and click the link in the email to login or sign
-              up.
+            <div className="text-2xl font-bold mb-3">
+              Confirm your email address
+            </div>
+            <p className="text-muted mb-6">
+              We sent an email to <strong>{email ?? ""}</strong>
             </p>
+
+            <p className="mb-6">
+              Please confirm your email address by clicking the link we just
+              sent to your inbox
+            </p>
+            <p className="mb-6">
+              Didn’t get a code?
+              <button
+                type="button"
+                onClick={onRetry}
+                className="ml-1 font-bold text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue"
+              >
+                Click to resend
+              </button>
+            </p>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-5 py-4 w-full text-lg text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue rounded-[10px]"
+            >
+              Change Email
+            </button>
           </div>
         </div>
       </Transition.Child>
@@ -63,10 +83,14 @@ const Confirm = ({ show = false, email = "" }) => (
   </Transition>
 );
 
-const AuthModal = ({ show = false, onClose = () => null }) => {
+const AuthModal = ({
+  show = false,
+  onClose = () => null,
+  showSignIn = false,
+  setShowSignIn = () => null,
+}) => {
   const [disabled, setDisabled] = useState(false);
   const [showConfirm, setConfirm] = useState(false);
-  const [showSignIn, setShowSignIn] = useState(false);
 
   const signInWithEmail = async ({ email }) => {
     let toastId;
@@ -131,7 +155,11 @@ const AuthModal = ({ show = false, onClose = () => null }) => {
         className="fixed inset-0 z-50 overflow-y-auto"
         onClose={closeModal}
       >
-        <Dialog.Overlay className="fixed inset-0 bg-black opacity-75" />
+        {/* The backdrop, rendered as a fixed sibling to the panel container */}
+        <div
+          className="fixed inset-0 bg-dialog-overlay backdrop-blur-xl "
+          aria-hidden="true"
+        ></div>
 
         <div className="min-h-screen text-center">
           <Transition.Child
@@ -143,7 +171,19 @@ const AuthModal = ({ show = false, onClose = () => null }) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0" />
+            <div className="fixed inset-0 flex items-end justify-center">
+              {!showSignIn && !showConfirm && (
+                <div className="text-white dark:text-black mb-7">
+                  <span className="mr-1.5">By signing up you agree to our</span>
+                  <Link
+                    href="/terms-and-conditions"
+                    className="font-bold underline"
+                  >
+                    Terms and Conditions & Privacy Policy
+                  </Link>
+                </div>
+              )}
+            </div>
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
@@ -163,37 +203,36 @@ const AuthModal = ({ show = false, onClose = () => null }) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <div className="inline-block w-full my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl sm:rounded-md max-w-md relative">
+            <div className="inline-block w-full my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-black shadow-xl sm:rounded-[20px] max-w-md relative">
               {/* Close icon */}
               <button
                 onClick={closeModal}
-                className="absolute top-2 right-2 shrink-0 p-1 rounded-md hover:bg-gray-100 transition focus:outline-none"
+                className="absolute top-2 right-2 shrink-0 p-1 rounded-full hover:bg-gray-100 transition focus:outline-none"
               >
-                <XIcon className="w-5 h-5" />
+                <XIcon className="w-8 h-8" />
               </button>
 
               <div className="py-12">
                 <div className="px-4 sm:px-12">
                   <Dialog.Title
-                    as="h3"
-                    className="mt-6 font-bold text-lg sm:text-2xl text-center"
+                    as="div"
+                    className="font-bold text-xl sm:text-2xl mb-2"
                   >
-                    {showSignIn ? "Welcome back!" : "Create your account"}
+                    {showSignIn ? "Login" : "Create an Account"}
                   </Dialog.Title>
 
-                  {!showSignIn ? (
-                    <Dialog.Description className="mt-2 text-gray-500 text-base text-center">
-                      Please create an account to list your homes and bookmark
-                      your favorite ones.
-                    </Dialog.Description>
-                  ) : null}
+                  <Dialog.Description className="text-muted text-base mb-7">
+                    {showSignIn
+                      ? "Welcome Back! Please enter your details."
+                      : "Enter the fields below to get started"}
+                  </Dialog.Description>
 
-                  <div className="mt-10">
+                  <div className="">
                     {/* Sign with Google */}
                     <button
                       disabled={disabled}
                       onClick={() => signInWithGoogle()}
-                      className="h-[46px] w-full mx-auto border rounded-md p-2 flex justify-center items-center space-x-2 text-gray-500 hover:text-gray-600 hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-25 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-500 disabled:hover:bg-transparent disabled:hover:border-gray-200 transition-colors"
+                      className="mb-5 w-full rounded-md py-2 pl-4 truncate border flex justify-center items-center space-x-2 hover:bg-custom-hovergray dark:hover:bg-gray-700 focus:outline-none disabled:opacity-75 disabled:pointer-events-none transition-colors"
                     >
                       <Image
                         src="/img/google.svg"
@@ -212,29 +251,32 @@ const AuthModal = ({ show = false, onClose = () => null }) => {
                       onSubmit={signInWithEmail}
                     >
                       {({ isSubmitting, isValid, values, resetForm }) => (
-                        <Form className="mt-4">
+                        <Form className="">
                           <Input
                             name="email"
                             type="email"
-                            placeholder="elon@spacex.com"
+                            label="Email address *"
                             disabled={disabled}
                             spellCheck={false}
+                            className="mb-5"
                           />
 
                           <button
                             type="submit"
                             disabled={disabled || !isValid}
-                            className="mt-6 w-full  bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue text-white py-2 px-8 rounded-md focus:outline-none focus:ring-4 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-rose-600"
+                            className="mb-7 px-5 py-4 w-full text-lg text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none rounded-[10px]"
                           >
                             {isSubmitting
                               ? "Loading..."
-                              : `Sign ${showSignIn ? "in" : "up"}`}
+                              : showSignIn
+                              ? "Login"
+                              : "Create Account"}
                           </button>
 
-                          <p className="mt-2 text-center text-sm text-gray-500">
+                          <p className="text-center ">
                             {showSignIn ? (
                               <>
-                                Don&apos;t have an account yet?{" "}
+                                Don&apos;t have an account?{" "}
                                 <button
                                   type="button"
                                   disabled={disabled}
@@ -242,11 +284,10 @@ const AuthModal = ({ show = false, onClose = () => null }) => {
                                     setShowSignIn(false);
                                     resetForm();
                                   }}
-                                  className="underline underline-offset-1 font-semibold  bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue disabled:hover:bg-custom-hoverblue disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="font-bold text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none"
                                 >
                                   Sign up
                                 </button>
-                                .
                               </>
                             ) : (
                               <>
@@ -258,7 +299,7 @@ const AuthModal = ({ show = false, onClose = () => null }) => {
                                     setShowSignIn(true);
                                     resetForm();
                                   }}
-                                  className="underline underline-offset-1 font-semibold text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue disabled:hover:text-custom-hoverblue disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="font-bold text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none"
                                 >
                                   Log in
                                 </button>
@@ -270,6 +311,14 @@ const AuthModal = ({ show = false, onClose = () => null }) => {
                           <Confirm
                             show={showConfirm}
                             email={values?.email ?? ""}
+                            onCancel={() => {
+                              setConfirm(false);
+                              resetForm();
+                            }}
+                            onRetry={() => {
+                              setConfirm(false);
+                              signInWithEmail(values);
+                            }}
                           />
                         </Form>
                       )}
