@@ -30,7 +30,7 @@ const menuItems = [
   },
 ];
 
-const Layout = ({ children = null, mainClassName = "" }) => {
+const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
   const router = useRouter();
 
   const { data: session, status } = useSession();
@@ -50,9 +50,14 @@ const Layout = ({ children = null, mainClassName = "" }) => {
         <header className="w-full">
           <div className="h-full mx-auto">
             <div className="h-full px-10 py-6 flex justify-between items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-1">
-                <Logo className="shrink-0" />
-              </Link>
+              {isHome ? (
+                <div></div>
+              ) : (
+                <Link href="/" className="flex items-center space-x-1">
+                  <Logo className="shrink-0" />
+                </Link>
+              )}
+
               <div className="flex items-center space-x-2.5">
                 {isLoadingUser ? (
                   <div className="h-8 w-[75px] bg-gray-200 animate-pulse rounded" />

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Image from "next/image";
 import Layout from "../components/Layout";
 import { toast } from "react-hot-toast";
@@ -9,15 +10,10 @@ import SearchResults from "../components/SearchResults";
 import Logo from "../components/Logo";
 
 export default function Home() {
-  const [searchUrl, setSearchUrl] = useState(
-    process.env.NODE_ENV === "production"
-      ? ""
-      : "https://www.shutterstock.com/shutterstock/photos/1922207963/display_1500/stock-photo-beautiful-attractive-stylish-woman-in-yellow-dress-and-straw-hat-holding-daisy-flower-romantic-mood-1922207963.jpg"
-  );
+  const router = useRouter();
+  const [searchUrl, setSearchUrl] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  //const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(null);
 
   const fetchData = async (searchUrl) => {
     toast.dismiss();
@@ -36,27 +32,41 @@ export default function Home() {
       //setError(error);
     }
     setIsSearching(false);
-    setSelectedIndex(null);
   };
+
+  useEffect(() => {
+    if (!searchUrl) {
+      setIsSearching(false);
+      setResult(null);
+      return;
+    }
+    fetchData(searchUrl);
+  }, [searchUrl]);
+
+  useEffect(() => {
+    const { query } = router;
+    setSearchUrl(query.q || "");
+  }, [router]);
 
   const handleSubmit = (url) => {
     setSearchUrl(url);
-    fetchData(url);
+    router.push(`/?q=${encodeURIComponent(url)}`);
   };
 
   const links = result && Array.isArray(result.images) ? result.images : [];
-  const selectedImage = links[selectedIndex];
-  const handleSelect = (index) => {
-    setSelectedIndex(index);
+  const handleSelect = () => {
+    // ToDo: Implement
   };
 
+  const isResultsPage = !!searchUrl && !!result;
+
   return (
-    <Layout mainClassName="flex align-items-center">
-      {!result ? (
+    <Layout mainClassName="flex align-items-center" isHome={!isResultsPage}>
+      {!isResultsPage ? (
         <div
           className={"w-full flex flex-col justify-center items-center py-5 "}
         >
-          <Logo className="mb-16"/>
+          <Logo className="mb-16" />
           <SearchForm
             searchUrl={searchUrl}
             isSearching={isSearching}
@@ -65,21 +75,11 @@ export default function Home() {
         </div>
       ) : (
         <div className="relative flex-1 flex items-center  bg-custom-dark text-white px-3 py-6">
-          {selectedImage ? (
-            <Image
-              src={selectedImage.link}
-              fill
-              style={{ objectFit: "cover", objectPosition: "center" }}
-              alt="Image"
-              priority
-            />
-          ) : (
-            <SearchResults
-              links={links}
-              imageUrl={searchUrl}
-              onSelect={handleSelect}
-            />
-          )}
+          <SearchResults
+            links={links}
+            imageUrl={searchUrl}
+            onSelect={handleSelect}
+          />
         </div>
       )}
     </Layout>

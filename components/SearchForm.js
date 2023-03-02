@@ -6,7 +6,12 @@ const SearchForm = ({
   onSubmit = () => {},
   className = "",
 }) => {
-  const [search, setSearch] = useState(searchUrl);
+  const defaultSearch =
+    process.env.NODE_ENV === "production"
+      ? ""
+      : "https://www.shutterstock.com/shutterstock/photos/1922207963/display_1500/stock-photo-beautiful-attractive-stylish-woman-in-yellow-dress-and-straw-hat-holding-daisy-flower-romantic-mood-1922207963.jpg";
+
+  const [search, setSearch] = useState(searchUrl || defaultSearch);
   const handleInputChange = (event) => {
     setSearch(event.target.value);
   };
