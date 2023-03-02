@@ -53,9 +53,9 @@ export default function Home() {
     router.push(`/?q=${encodeURIComponent(url)}`);
   };
 
-  const links = result && Array.isArray(result.images) ? result.images : [];
+  const images = result && Array.isArray(result.images) ? result.images : [];
   const handleSelect = () => {
-    // ToDo: Implement
+    // ToDo: Implement click tracking
   };
 
   const isResultsPage = !!searchUrl && !!result;
@@ -74,10 +74,10 @@ export default function Home() {
           />
         </div>
       ) : (
-        <div className="relative flex-1 flex items-center  bg-custom-dark text-white px-3 py-6">
+        <div className="relative flex-1 flex items-center px-3 py-6">
           <SearchResults
-            links={links}
-            imageUrl={searchUrl}
+            images={images}
+            searchUrl={searchUrl}
             onSelect={handleSelect}
           />
         </div>

@@ -36,6 +36,7 @@ module.exports = {
         sans: ["Inter", ...defaultTheme.fontFamily.sans],
         stock: [defaultTheme.fontFamily.sans],
       },
+      // use auther this seetings or use tailwindcss/aspect-ratio plugin to avoid conflicts
       aspectRatio: {
         "4/3": "4 / 3",
         "3/2": "3 / 2",
@@ -49,6 +50,6 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/forms"),
-    require("@tailwindcss/aspect-ratio"),
+    //require("@tailwindcss/aspect-ratio"),
   ],
 };

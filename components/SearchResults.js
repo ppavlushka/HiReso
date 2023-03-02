@@ -1,12 +1,17 @@
 import Image from "next/image";
 
-const SearchResults = ({ imageUrl, links, onSelect = () => {}, limit = 6 }) => {
+const SearchResults = ({
+  searchUrl,
+  images,
+  onSelect = () => {},
+  limit = 6,
+}) => {
   return (
     <div className="w-full md:max-w-2xl lg:max-w-screen-lg mx-auto">
-      <div className="text-lg font-medium mb-3">Preview</div>
-      <div className="relative w-full aspect-video mb-12">
+      <div className="text-lg font-medium mb-6">Preview</div>
+      <div className="relative w-full aspect-video mb-16">
         <Image
-          src={imageUrl}
+          src={searchUrl}
           fill
           style={{ objectFit: "cover", objectPosition: "center" }}
           alt="Image"
@@ -14,16 +19,21 @@ const SearchResults = ({ imageUrl, links, onSelect = () => {}, limit = 6 }) => {
           unoptimized
         />
       </div>
-      <div className="text-lg font-medium mb-3">Download Links:</div>
+      <div className="text-lg font-medium mb-4">Download Links:</div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3.5 text-lg">
-        {links.slice(0, limit).map((link, index) => (
-          <button
+        {images.slice(0, limit).map((image, index) => (
+          <a
             key={index}
-            className="px-8 py-4 bg-custom-darkgray hover:bg-gray-700 transition-colors text-white text-center"
-            onClick={(evt) => onSelect(index)}
+            className="px-7 py-4 bg-custom-darkgray hover:bg-gray-700 transition-colors text-white text-center rounded-[5px] inline-flex items-center justify-center"
+            onClick={() => onSelect(image)}
+            target="_blank"
+            rel="noopener noreferrer"
+            href={image.link}
           >
-            {link.width}x{link.height}
-          </button>
+            <span>
+              {image.width}x{image.height}
+            </span>
+          </a>
         ))}
       </div>
     </div>
