@@ -141,6 +141,7 @@ const AuthModal = ({
         setShowSignIn(false);
       }, 200);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show]);
 
   // Remove pending toasts if any

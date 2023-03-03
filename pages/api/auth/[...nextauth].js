@@ -33,26 +33,26 @@ const sendVerificationRequest = async ({ identifier, url }) => {
     email: identifier,
   });
   // my own smtp server
-  transporter.sendMail({
+  /* transporter.sendMail({
     from: `"✨ HiReso" ${process.env.EMAIL_FROM}`,
     to: identifier,
     subject: "HiReso Login Verification",
     html,
-  });
+  }); */
 
   // mailchimp transactional
-  /* const response = await mailchimpTx.messages.send({
+  const response = await mailchimpTx.messages.send({
     message: {
-      from_email: `${process.env.MAILCHIMP_FROM_EMAIL}`,
+      from_email: process.env.MAILCHIMP_FROM_EMAIL,
       subject: "HiReso Login Verification",
       html,
       to: [{ email: identifier, type: "to" }],
     },
   });
-
+  console.log(response);
   if (response.status !== "queued") {
     throw new Error(response.message || "Failed to send verification email");
-  } */
+  }
 };
 
 const sendWelcomeEmail = async ({ user }) => {
