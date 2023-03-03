@@ -23,11 +23,17 @@ const menuItems = [
   },
 ];
 
-const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
+const Layout = ({
+  children = null,
+  mainClassName = "",
+  isHome = false,
+  linksComponent,
+}) => {
   const router = useRouter();
 
   const { data: session, status } = useSession();
   const user = session?.user;
+  console.log("user", user);
   const isLoadingUser = status === "loading";
 
   const [showModal, setShowModal] = useState(false);
@@ -50,10 +56,17 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
               {isHome ? (
                 <div></div>
               ) : (
-                <Link href="/" className="flex items-center space-x-1">
-                  <Logo className="shrink-0" />
-                </Link>
+                <>
+                  <Link
+                    href="/"
+                    className="flex items-center space-x-1 relative bottom-0.5"
+                  >
+                    <Logo className="shrink-0" />
+                  </Link>
+                  {linksComponent}
+                </>
               )}
+              <div className="flex-1"></div>
 
               <div className="flex items-center space-x-2.5">
                 {isLoadingUser ? (
@@ -62,7 +75,7 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
                   <Menu as="div" className="relative z-50">
                     <Menu.Button className="flex items-center space-x-px group">
                       <div className="text-xs text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue px-2.5 py-1 rounded-[20px] border border-white translate-x-2.5 z-10 relative">
-                        5 <span class="hidden sm:inline">Downloads</span>
+                        5 <span className="hidden sm:inline">Downloads</span>
                       </div>
                       <div className="shrink-0 flex items-center justify-center rounded-full overflow-hidden relative bg-gray-200 w-12 h-12">
                         {user?.image ? (
@@ -88,7 +101,7 @@ const Layout = ({ children = null, mainClassName = "", isHome = false }) => {
                     >
                       <Menu.Items className="px-5 absolute right-0 w-48 mt-4 border-4 border-custom-inputbg dark:border-gray-600 bg-white dark:bg-black origin-top-right rounded-[3px] focus:outline-none">
                         <div
-                          class="w-0 h-0 
+                          className="w-0 h-0 
                             absolute z-10 -top-2.5 right-2.5
                             border-l-[8px] border-l-transparent
                             border-b-[8px] border-b-custom-inputbg dark:border-b-gray-600

@@ -177,7 +177,7 @@ const AuthModal = ({
                   <span className="mr-1.5">By signing up you agree to our</span>
                   <Link
                     href="/terms-and-conditions"
-                    className="font-bold underline"
+                    className="font-bold underline hover:text-custom-hoverblue focus:text-custom-hoverblue transition-colors"
                   >
                     Terms and Conditions & Privacy Policy
                   </Link>
