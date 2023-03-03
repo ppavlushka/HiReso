@@ -1,12 +1,13 @@
-import NextAuth from 'next-auth';
-import EmailProvider from 'next-auth/providers/email';
-import GoogleProvider from 'next-auth/providers/google';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { prisma } from '@/lib/prisma';
-import nodemailer from 'nodemailer';
-import Handlebars from 'handlebars';
-import { readFileSync } from 'fs';
-import path from 'path';
+import NextAuth from "next-auth";
+import EmailProvider from "next-auth/providers/email";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
+import { mailchimpTx, mailchimp } from "@/lib/mailchimp";
+import nodemailer from "nodemailer";
+import Handlebars from "handlebars";
+import { readFileSync } from "fs";
+import path from "path";
 
 // Email sender
 const transporter = nodemailer.createTransport({
@@ -19,53 +20,100 @@ const transporter = nodemailer.createTransport({
   secure: true,
 });
 
-const emailsDir = path.resolve(process.cwd(), 'emails');
+const emailsDir = path.resolve(process.cwd(), "emails");
 
-const sendVerificationRequest = ({ identifier, url }) => {
-  const emailFile = readFileSync(path.join(emailsDir, 'confirm-email.html'), {
-    encoding: 'utf8',
+const sendVerificationRequest = async ({ identifier, url }) => {
+  const emailFile = readFileSync(path.join(emailsDir, "confirm-email.html"), {
+    encoding: "utf8",
   });
   const emailTemplate = Handlebars.compile(emailFile);
+  const html = emailTemplate({
+    base_url: process.env.NEXTAUTH_URL,
+    signin_url: url,
+    email: identifier,
+  });
+  // my own smtp server
   transporter.sendMail({
     from: `"✨ HiReso" ${process.env.EMAIL_FROM}`,
     to: identifier,
-    subject: 'HiReso Login Verification',
-    html: emailTemplate({
-      base_url: process.env.NEXTAUTH_URL,
-      signin_url: url,
-      email: identifier,
-    }),
+    subject: "HiReso Login Verification",
+    html,
   });
+
+  // mailchimp transactional
+  /* const response = await mailchimpTx.messages.send({
+    message: {
+      from_email: `${process.env.MAILCHIMP_FROM_EMAIL}`,
+      subject: "HiReso Login Verification",
+      html,
+      to: [{ email: identifier, type: "to" }],
+    },
+  });
+
+  if (response.status !== "queued") {
+    throw new Error(response.message || "Failed to send verification email");
+  } */
 };
 
 const sendWelcomeEmail = async ({ user }) => {
-  const { email } = user;
-
+  const { email, name } = user;
+  console.log("New user:", user);
+  // send welcome email
   try {
-    const emailFile = readFileSync(path.join(emailsDir, 'welcome.html'), {
-      encoding: 'utf8',
+    const emailFile = readFileSync(path.join(emailsDir, "welcome.html"), {
+      encoding: "utf8",
     });
     const emailTemplate = Handlebars.compile(emailFile);
     await transporter.sendMail({
       from: `"✨ HiReso" ${process.env.EMAIL_FROM}`,
       to: email,
-      subject: 'Welcome to HiReso! 🎉',
+      subject: "Welcome to HiReso! 🎉",
       html: emailTemplate({
         base_url: process.env.NEXTAUTH_URL,
-        support_email: 'info@hireso.io',
+        support_email: "info@hireso.io",
       }),
     });
+    console.log(
+      `Successfully sent welcome email to ${email}. New user id: ${user.id}`
+    );
   } catch (error) {
     console.log(`❌ Unable to send welcome email to user (${email})`);
+  }
+
+  // add to mailchimp list
+  const lists = await mailchimp.lists.getAllLists();
+  if (Array.isArray(lists?.lists)) {
+    const listId = lists.lists[0].id;
+    const [fName, ...lName] = String(name || "").split(" ");
+    try {
+      const newListMember = await mailchimp.lists.addListMember(listId, {
+        email_address: email,
+        status: "subscribed",
+        merge_fields: {
+          FNAME: fName,
+          LNAME: lName.join(" "),
+        },
+      });
+      console.log(newListMember);
+      console.log(
+        `Successfully added email ${email} to the list ${listId}. New member: ${newListMember.id}`
+      );
+    } catch (error) {
+      // do something if subsription was unsuccessful
+      console.log(
+        `Failed to add email ${email} to the list ${listId}. Error message:`,
+        error?.message
+      );
+    }
   }
 };
 
 export default NextAuth({
   pages: {
-    signIn: '/',
-    signOut: '/',
-    error: '/',
-    verifyRequest: '/',
+    signIn: "/",
+    signOut: "/",
+    error: "/",
+    verifyRequest: "/",
   },
   providers: [
     EmailProvider({
