@@ -5,7 +5,7 @@ function Terms() {
   return (
     <Layout
       mainClassName=""
-      linksComponent={
+      leftComponent={
         <div className="flex items-center text-2xl text-[#6c6c6c]">
           Privacy & Terms
         </div>

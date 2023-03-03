@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import Image from "next/image";
+//import Image from "next/image";
 import Layout from "../components/Layout";
 import { toast } from "react-hot-toast";
 //import styles from "../styles/Home.module.css";
@@ -60,18 +60,27 @@ export default function Home() {
 
   const isResultsPage = !!searchUrl && !!result;
 
+  const formComponent = (
+    <SearchForm
+      searchUrl={searchUrl}
+      isSearching={isSearching}
+      onSubmit={handleSubmit}
+      className="w-full md:max-w-xl"
+    />
+  );
+
   return (
-    <Layout mainClassName="flex align-items-center" isHome={!isResultsPage}>
+    <Layout
+      mainClassName="flex align-items-center"
+      isHome={!isResultsPage}
+      centerComponent={isResultsPage ? formComponent : null}
+    >
       {!isResultsPage ? (
         <div
           className={"w-full flex flex-col justify-center items-center py-5 "}
         >
           <Logo className="mb-16" />
-          <SearchForm
-            searchUrl={searchUrl}
-            isSearching={isSearching}
-            onSubmit={handleSubmit}
-          />
+          {formComponent}
         </div>
       ) : (
         <div className="relative flex-1 flex items-center px-3 py-6">

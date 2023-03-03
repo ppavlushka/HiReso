@@ -27,7 +27,8 @@ const Layout = ({
   children = null,
   mainClassName = "",
   isHome = false,
-  linksComponent,
+  leftComponent,
+  centerComponent,
 }) => {
   const router = useRouter();
 
@@ -63,10 +64,14 @@ const Layout = ({
                   >
                     <Logo className="shrink-0" />
                   </Link>
-                  {linksComponent}
+                  {leftComponent}
                 </>
               )}
-              <div className="flex-1"></div>
+              <div className="flex-1 ">
+                <div className="hidden lg:flex justify-center items-center">
+                  {centerComponent}
+                </div>
+              </div>
 
               <div className="flex items-center space-x-2.5">
                 {isLoadingUser ? (

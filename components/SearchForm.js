@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React, { useState } from "react";
 
 const SearchForm = ({
@@ -24,10 +25,10 @@ const SearchForm = ({
   return (
     <form
       onSubmit={handleSearch}
-      className={
-        "flex flex-wrap justify-center sm:items-stretch w-full md:max-w-xl leading-tight" +
+      className={classNames(
+        "flex flex-wrap justify-center sm:items-stretch leading-tight",
         className
-      }
+      )}
     >
       <input
         type="url"
