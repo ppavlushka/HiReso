@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { useRouter } from "next/router";
 //import Head from "next/head";
 import Link from "next/link";
@@ -22,6 +22,8 @@ const menuItems = [
     onClick: signOut,
   },
 ];
+
+export const LayoutContext = React.createContext(null);
 
 const Layout = ({
   children = null,
@@ -193,7 +195,9 @@ const Layout = ({
             mainClassName
           }
         >
-          {typeof children === "function" ? children(openModal) : children}
+          <LayoutContext.Provider value={{ openModal }}>
+            {typeof children === "function" ? children(openModal) : children}
+          </LayoutContext.Provider>
         </main>
 
         <AuthModal

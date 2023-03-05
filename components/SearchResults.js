@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { track } from "../lib/track";
+import { LayoutContext } from "./Layout";
 
 const SearchResults = ({ searchUrl, images, limit = 6 }) => {
   const { data: session, status } = useSession();
@@ -10,10 +11,18 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
   const isLoadingUser = status === "loading";
   const canDownload = user && !isLoadingUser && user.availableQuota > 0;
   const [downloaded, setDownloaded] = useState(false);
-  const handleDownload = async () => {
+
+  const { openModal } = useContext(LayoutContext);
+  const handleDownload = async (evt) => {
     // const event = new Event("visibilitychange");
     // document.dispatchEvent(event);
     toast.dismiss();
+
+    if (!canDownload) {
+      evt.preventDefault();
+      if (!user) return openModal();
+      return toast.error("You have reached your quota limit.");
+    }
     if (downloaded) return;
     try {
       await track();
@@ -31,11 +40,6 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
       const event = new Event("visibilitychange");
       document.dispatchEvent(event);
     }
-  };
-
-  const showQuotaWarning = (evt) => {
-    evt.preventDefault();
-    toast.error("You have reached your quota limit.");
   };
 
   return (
@@ -57,9 +61,7 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
           <a
             key={index}
             className="px-7 py-4 bg-custom-darkgray hover:bg-gray-700 transition-colors text-white text-center rounded-[5px] inline-flex items-center justify-center"
-            onClick={(evt) =>
-              canDownload ? handleDownload() : showQuotaWarning(evt)
-            }
+            onClick={(evt) => handleDownload(evt)}
             target="_blank"
             rel="noopener noreferrer"
             href={canDownload ? image.link : "!#"}
