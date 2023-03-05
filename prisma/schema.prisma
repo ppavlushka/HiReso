@@ -48,9 +48,9 @@ model User {
   accounts      Account[]
   sessions      Session[]
   // number of searches used by the user
-  usedSearches  Int       @default(0) @map("used_searches")
+  usedQuota     Int       @default(0) @map("used_quota")
   // number of searches left for the user
-  leftSearches  Int       @default(5) @map("left_searches")
+  quota         Int       @default(5) @map("quota")
 }
 
 model VerificationToken {

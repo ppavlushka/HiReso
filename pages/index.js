@@ -54,9 +54,6 @@ export default function Home() {
   };
 
   const images = result && Array.isArray(result.images) ? result.images : [];
-  const handleSelect = () => {
-    // ToDo: Implement click tracking
-  };
 
   const isResultsPage = !!searchUrl && !!result;
 
@@ -84,11 +81,7 @@ export default function Home() {
         </div>
       ) : (
         <div className="relative flex-1 flex items-center px-3 py-6">
-          <SearchResults
-            images={images}
-            searchUrl={searchUrl}
-            onSelect={handleSelect}
-          />
+          <SearchResults images={images} searchUrl={searchUrl} />
         </div>
       )}
     </Layout>

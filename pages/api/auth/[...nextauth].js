@@ -108,7 +108,7 @@ const sendWelcomeEmail = async ({ user }) => {
   }
 };
 
-export default NextAuth({
+export const authOptions = {
   pages: {
     signIn: "/",
     signOut: "/",
@@ -127,4 +127,16 @@ export default NextAuth({
   ],
   adapter: PrismaAdapter(prisma),
   events: { createUser: sendWelcomeEmail },
-});
+  callbacks: {
+    async session({ session, user }) {
+      // Send properties to the client, like an access_token and user id from a provider.
+      session.user.usedQuota = user.usedQuota;
+      session.user.quota = user.quota;
+      session.user.availableQuota =
+        Math.max(user.quota - user.usedQuota, 0) || 0;
+      return session;
+    },
+  },
+};
+
+export default NextAuth(authOptions);

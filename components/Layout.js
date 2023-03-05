@@ -34,7 +34,6 @@ const Layout = ({
 
   const { data: session, status } = useSession();
   const user = session?.user;
-  console.log("user", user);
   const isLoadingUser = status === "loading";
 
   const [showModal, setShowModal] = useState(false);
@@ -80,7 +79,8 @@ const Layout = ({
                   <Menu as="div" className="relative z-50">
                     <Menu.Button className="flex items-center space-x-px group">
                       <div className="text-xs text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue px-2.5 py-1 rounded-[20px] border border-white translate-x-2.5 z-10 relative">
-                        5 <span className="hidden sm:inline">Downloads</span>
+                        {user.availableQuota}{" "}
+                        <span className="hidden sm:inline">Downloads</span>
                       </div>
                       <div className="shrink-0 flex items-center justify-center rounded-full overflow-hidden relative bg-gray-200 w-12 h-12">
                         {user?.image ? (
