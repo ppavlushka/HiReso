@@ -8,6 +8,7 @@ import nodemailer from "nodemailer";
 import Handlebars from "handlebars";
 import { readFileSync } from "fs";
 import path from "path";
+import _ from "lodash";
 
 // Email sender
 const transporter = nodemailer.createTransport({
@@ -50,7 +51,7 @@ const sendVerificationRequest = async ({ identifier, url }) => {
     },
   });
   console.log(response);
-  if (response.status !== "queued") {
+  if (!["queued", "sent"].includes(_.get(response, "[0]status"))) {
     throw new Error(response.message || "Failed to send verification email");
   }
 };
