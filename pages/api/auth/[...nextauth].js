@@ -59,59 +59,6 @@ const sendVerificationRequest = async ({ identifier, url }) => {
   }
 };
 
-const sendWelcomeEmail = async ({ user }) => {
-  const { email, name } = user;
-  console.log("New user:", user);
-  // send welcome email
-  try {
-    const emailFile = readFileSync(path.join(emailsDir, "welcome.html"), {
-      encoding: "utf8",
-    });
-    const emailTemplate = Handlebars.compile(emailFile);
-    await transporter.sendMail({
-      from: `"✨ HiReso" ${process.env.EMAIL_FROM}`,
-      to: email,
-      subject: "Welcome to HiReso! 🎉",
-      html: emailTemplate({
-        base_url: process.env.NEXTAUTH_URL,
-        support_email: "info@hireso.io",
-      }),
-    });
-    console.log(
-      `Successfully sent welcome email to ${email}. New user id: ${user.id}`
-    );
-  } catch (error) {
-    console.log(`❌ Unable to send welcome email to user (${email})`);
-  }
-
-  // add to mailchimp list
-  const lists = await mailchimp.lists.getAllLists();
-  if (Array.isArray(lists?.lists)) {
-    const listId = lists.lists[0].id;
-    const [fName, ...lName] = String(name || "").split(" ");
-    try {
-      const newListMember = await mailchimp.lists.addListMember(listId, {
-        email_address: email,
-        status: "subscribed",
-        merge_fields: {
-          FNAME: fName,
-          LNAME: lName.join(" "),
-        },
-      });
-      console.log(newListMember);
-      console.log(
-        `Successfully added email ${email} to the list ${listId}. New member: ${newListMember.id}`
-      );
-    } catch (error) {
-      // do something if subsription was unsuccessful
-      console.log(
-        `Failed to add email ${email} to the list ${listId}. Error message:`,
-        error?.message
-      );
-    }
-  }
-};
-
 export const authOptions = {
   pages: {
     signIn: "/",
@@ -130,7 +77,7 @@ export const authOptions = {
     }),
   ],
   adapter: PrismaAdapter(prisma),
-  events: { createUser: sendWelcomeEmail },
+  events: {},
   callbacks: {
     async session({ session, user }) {
       // Send properties to the client, like an access_token and user id from a provider.
@@ -148,23 +95,76 @@ export default async function auth(req, res) {
     ...authOptions,
     events: {
       ...authOptions.events,
-      signIn: async ({ user }) => {
+      createUser: async ({ user }) => {
+        let clientIp, country;
         try {
           console.log(`Saving user country`);
-          const clientIp = requestIp.getClientIp(req);
+          clientIp = requestIp.getClientIp(req);
           console.log(`Client IP: ${clientIp}`);
           const ipInfo = await ipinfoWrapper.lookupIp(clientIp);
           console.log(ipInfo);
-          const { country } = ipInfo;
+          country = ipInfo.country || "UA";
           // save country code
           if (country) {
             await prisma.user.update({
               where: { id: user.id },
               data: { country },
             });
+            user.country = country;
           }
         } catch (error) {
           console.log(`Unable to get user country. Error: ${error.message}`);
+        }
+        const { email, name } = user;
+        console.log("New user:", user);
+        // send welcome email
+        try {
+          const emailFile = readFileSync(path.join(emailsDir, "welcome.html"), {
+            encoding: "utf8",
+          });
+          const emailTemplate = Handlebars.compile(emailFile);
+          await transporter.sendMail({
+            from: `"✨ HiReso" ${process.env.EMAIL_FROM}`,
+            to: email,
+            subject: "Welcome to HiReso! 🎉",
+            html: emailTemplate({
+              base_url: process.env.NEXTAUTH_URL,
+              support_email: "info@hireso.io",
+            }),
+          });
+          console.log(
+            `Successfully sent welcome email to ${email}. New user id: ${user.id}`
+          );
+        } catch (error) {
+          console.log(`❌ Unable to send welcome email to user (${email})`);
+        }
+
+        // add to mailchimp list
+        const lists = await mailchimp.lists.getAllLists();
+        if (Array.isArray(lists?.lists)) {
+          const listId = lists.lists[0].id;
+          const [fName, ...lName] = String(name || "").split(" ");
+          try {
+            const newListMember = await mailchimp.lists.addListMember(listId, {
+              email_address: email,
+              status: "subscribed",
+              merge_fields: {
+                FNAME: fName,
+                LNAME: lName.join(" "),
+                country,
+              },
+            });
+            console.log(newListMember);
+            console.log(
+              `Successfully added email ${email} to the list ${listId}. New member: ${newListMember.id}`
+            );
+          } catch (error) {
+            // do something if subsription was unsuccessful
+            console.log(
+              `Failed to add email ${email} to the list ${listId}. Error message:`,
+              error?.message
+            );
+          }
         }
       },
     },
