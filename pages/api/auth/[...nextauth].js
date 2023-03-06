@@ -10,6 +10,7 @@ import { readFileSync } from "fs";
 import path from "path";
 import _ from "lodash";
 import requestIp from "request-ip";
+import md5 from "md5";
 import IPinfoWrapper from "node-ipinfo";
 const ipinfoWrapper = new IPinfoWrapper(process.env.IPINFO_TOKEN);
 
@@ -85,6 +86,12 @@ export const authOptions = {
       session.user.quota = user.quota;
       session.user.availableQuota =
         Math.max(user.quota - user.usedQuota, 0) || 0;
+      // gravatar user image
+      if (!user.image) {
+        session.user.image = `https://www.gravatar.com/avatar/${md5(
+          user.email
+        )}?s=96`;
+      }
       return session;
     },
   },
@@ -96,26 +103,6 @@ export default async function auth(req, res) {
     ...authOptions,
     callbacks: {
       ...authOptions.callbacks,
-      // eslint-disable-next-line no-unused-vars
-      async signIn({ user, account, profile, email, credentials }) {
-        if (email?.verificationRequest) {
-          // temporary save user email
-          try {
-            await prisma.userData.create({
-              data: {
-                email: user?.email,
-                name: req.body.name,
-              },
-            });
-          } catch (error) {
-            console.log(
-              `Unable to temporarity save user name during email verification. Error: ${error.message}`
-            );
-          }
-          return true;
-        }
-        return true;
-      },
     },
     events: {
       ...authOptions.events,
@@ -139,30 +126,6 @@ export default async function auth(req, res) {
           }
         } catch (error) {
           console.log(`Unable to get user country. Error: ${error.message}`);
-        }
-
-        // persist user name
-        if (!user.name) {
-          try {
-            console.log(`Saving user name`);
-            const userData = await prisma.userData.findUnique({
-              where: { email: user.email },
-            });
-            if (userData) {
-              await prisma.user.update({
-                where: { id: user.id },
-                data: { name: userData.name },
-              });
-              user.name = userData.name;
-              console.log(`User name saved: ${userData.name}`);
-              // delete userData
-              await prisma.userData.delete({
-                where: { email: user.email },
-              });
-            }
-          } catch (error) {
-            console.log(`Unable to persist user name. Error: ${error.message}`);
-          }
         }
 
         const { email, name } = user;

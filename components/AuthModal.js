@@ -15,7 +15,6 @@ const SignInSchema = Yup.object().shape({
     .trim()
     .email("Invalid email")
     .required("This field is required"),
-  name: Yup.string().trim().required("This field is required"),
 });
 
 const Confirm = ({
@@ -93,7 +92,7 @@ const AuthModal = ({
   const [disabled, setDisabled] = useState(false);
   const [showConfirm, setConfirm] = useState(false);
 
-  const signInWithEmail = async ({ email, name }) => {
+  const signInWithEmail = async ({ email }) => {
     let toastId;
     try {
       toastId = toast.loading("Loading...");
@@ -103,7 +102,6 @@ const AuthModal = ({
         redirect: false,
         callbackUrl: window.location.href,
         email,
-        name,
       });
       // Something went wrong
       if (error) {
@@ -256,14 +254,6 @@ const AuthModal = ({
                       {({ isSubmitting, isValid, values, resetForm }) => (
                         <Form className="">
                           <Input
-                            name="name"
-                            type="text"
-                            label="Full Name *"
-                            disabled={disabled}
-                            spellCheck={false}
-                            className="mb-5"
-                          />
-                          <Input
                             name="email"
                             type="email"
                             label="Email address *"
@@ -275,7 +265,7 @@ const AuthModal = ({
                           <button
                             type="submit"
                             disabled={disabled || !isValid}
-                            className="mb-7 px-5 py-4 w-full text-lg text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none rounded-[10px]"
+                            className="px-5 py-4 w-full text-lg text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none rounded-[10px]"
                           >
                             {isSubmitting
                               ? "Loading..."
@@ -283,41 +273,6 @@ const AuthModal = ({
                               ? "Login"
                               : "Create Account"}
                           </button>
-
-                          <p className="text-center ">
-                            {showSignIn ? (
-                              <>
-                                Don&apos;t have an account?{" "}
-                                <button
-                                  type="button"
-                                  disabled={disabled}
-                                  onClick={() => {
-                                    setShowSignIn(false);
-                                    resetForm();
-                                  }}
-                                  className="font-bold text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none"
-                                >
-                                  Sign up
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                Already have an account?{" "}
-                                <button
-                                  type="button"
-                                  disabled={disabled}
-                                  onClick={() => {
-                                    setShowSignIn(true);
-                                    resetForm();
-                                  }}
-                                  className="font-bold text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none"
-                                >
-                                  Log in
-                                </button>
-                                .
-                              </>
-                            )}
-                          </p>
 
                           <Confirm
                             show={showConfirm}

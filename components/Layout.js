@@ -39,10 +39,9 @@ const Layout = ({
   const isLoadingUser = status === "loading";
 
   const [showModal, setShowModal] = useState(false);
-  const [showSignIn, setShowSignIn] = useState(false);
+  const [showSignIn] = useState(true);
 
-  const openModal = (params) => {
-    setShowSignIn(params?.showSignIn);
+  const openModal = () => {
     setShowModal(true);
   };
   const closeModal = () => setShowModal(false);
@@ -165,7 +164,7 @@ const Layout = ({
                   </Menu>
                 ) : (
                   <>
-                    <button
+                    {/*  <button
                       onClick={() => {
                         session?.user
                           ? router.push("/create")
@@ -174,7 +173,7 @@ const Layout = ({
                       className="hidden sm:block px-5 py-3 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition rounded-[5px]"
                     >
                       Login
-                    </button>
+                    </button> */}
                     <button
                       type="button"
                       onClick={() => openModal({ showSignIn: false })}
@@ -204,7 +203,6 @@ const Layout = ({
           show={showModal}
           onClose={closeModal}
           showSignIn={showSignIn}
-          setShowSignIn={setShowSignIn}
         />
       </div>
     </>
