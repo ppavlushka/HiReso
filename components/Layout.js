@@ -53,7 +53,7 @@ const Layout = ({
       <div className="min-h-screen flex flex-col">
         <header className="w-full">
           <div className="h-full mx-auto">
-            <div className="h-full px-10 py-6 flex justify-between items-center space-x-4">
+            <div className="h-full px-10 py-6 flex justify-between items-start space-x-4">
               {isHome ? (
                 <div></div>
               ) : (

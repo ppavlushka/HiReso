@@ -6,6 +6,7 @@ const SearchForm = ({
   isSearching,
   onSubmit = () => {},
   className = "",
+  error = null,
 }) => {
   const defaultSearch =
     process.env.NODE_ENV === "production"
@@ -46,6 +47,9 @@ const SearchForm = ({
       >
         {isSearching ? "Wait..." : "Search"}
       </button>
+      {error && (
+        <div className="text-danger mt-8 w-full text-center">{error}</div>
+      )}
     </form>
   );
 };

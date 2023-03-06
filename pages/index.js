@@ -11,16 +11,19 @@ import Logo from "../components/Logo";
 
 export default function Home() {
   const router = useRouter();
-  const [searchUrl, setSearchUrl] = useState("");
+  const [searchUrl, setSearchUrl] = useState(router.query.q || "");
   const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
 
   const fetchData = async (searchUrl) => {
     toast.dismiss();
     try {
+      setError(null);
       setIsSearching(true);
       const result = await search(searchUrl);
-      setResult(result);
+      setResult({ success: true, ...result, searchUrl });
+      router.push(`/?q=${encodeURIComponent(searchUrl)}`);
     } catch (error) {
       const message =
         (error &&
@@ -29,7 +32,7 @@ export default function Home() {
           error.response.data.message) ||
         "Something went wrong!";
       toast.error(message);
-      //setError(error);
+      setError({ success: false, message });
     }
     setIsSearching(false);
   };
@@ -38,6 +41,8 @@ export default function Home() {
     if (!searchUrl) {
       setIsSearching(false);
       setResult(null);
+      setError(null);
+      toast.dismiss();
       return;
     }
     fetchData(searchUrl);
@@ -49,8 +54,10 @@ export default function Home() {
   }, [router]);
 
   const handleSubmit = (url) => {
+    if (searchUrl === url) {
+      fetchData(url);
+    }
     setSearchUrl(url);
-    router.push(`/?q=${encodeURIComponent(url)}`);
   };
 
   const images = result && Array.isArray(result.images) ? result.images : [];
@@ -63,6 +70,7 @@ export default function Home() {
       isSearching={isSearching}
       onSubmit={handleSubmit}
       className="w-full md:max-w-xl"
+      error={error?.message}
     />
   );
 
@@ -81,7 +89,7 @@ export default function Home() {
         </div>
       ) : (
         <div className="relative flex-1 flex items-center px-3 py-6">
-          <SearchResults images={images} searchUrl={searchUrl} />
+          <SearchResults images={images} searchUrl={result?.searchUrl} />
         </div>
       )}
     </Layout>
