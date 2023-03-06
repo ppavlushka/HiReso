@@ -9,6 +9,9 @@ import Handlebars from "handlebars";
 import { readFileSync } from "fs";
 import path from "path";
 import _ from "lodash";
+import requestIp from "request-ip";
+import IPinfoWrapper, { IPinfo } from "node-ipinfo";
+const ipinfoWrapper = new IPinfoWrapper(process.env.IPINFO_TOKEN);
 
 // Email sender
 const transporter = nodemailer.createTransport({
@@ -140,4 +143,30 @@ export const authOptions = {
   },
 };
 
-export default NextAuth(authOptions);
+export default async function auth(req, res) {
+  return await NextAuth(req, res, {
+    ...authOptions,
+    events: {
+      ...authOptions.events,
+      signIn: async ({ user }) => {
+        try {
+          console.log(`Saving user country`);
+          const clientIp = requestIp.getClientIp(req);
+          console.log(`Client IP: ${clientIp}`);
+          const ipInfo = await ipinfoWrapper.lookupIp(clientIp);
+          console.log(ipInfo);
+          const { country } = ipInfo;
+          // save country code
+          if (country) {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { country },
+            });
+          }
+        } catch (error) {
+          console.log(`Unable to get user country. Error: ${error.message}`);
+        }
+      },
+    },
+  });
+}

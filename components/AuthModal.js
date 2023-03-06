@@ -15,6 +15,7 @@ const SignInSchema = Yup.object().shape({
     .trim()
     .email("Invalid email")
     .required("This field is required"),
+  name: Yup.string().trim().required("This field is required"),
 });
 
 const Confirm = ({
@@ -92,7 +93,7 @@ const AuthModal = ({
   const [disabled, setDisabled] = useState(false);
   const [showConfirm, setConfirm] = useState(false);
 
-  const signInWithEmail = async ({ email }) => {
+  const signInWithEmail = async ({ email, name }) => {
     let toastId;
     try {
       toastId = toast.loading("Loading...");
@@ -102,6 +103,7 @@ const AuthModal = ({
         redirect: false,
         callbackUrl: window.location.href,
         email,
+        name,
       });
       // Something went wrong
       if (error) {
@@ -141,7 +143,7 @@ const AuthModal = ({
         setShowSignIn(false);
       }, 200);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show]);
 
   // Remove pending toasts if any
@@ -246,13 +248,21 @@ const AuthModal = ({
 
                     {/* Sign with email */}
                     <Formik
-                      initialValues={{ email: "" }}
+                      initialValues={{ email: "", name: "" }}
                       validationSchema={SignInSchema}
                       validateOnBlur={false}
                       onSubmit={signInWithEmail}
                     >
                       {({ isSubmitting, isValid, values, resetForm }) => (
                         <Form className="">
+                          <Input
+                            name="name"
+                            type="text"
+                            label="Full Name *"
+                            disabled={disabled}
+                            spellCheck={false}
+                            className="mb-5"
+                          />
                           <Input
                             name="email"
                             type="email"

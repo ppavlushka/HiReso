@@ -51,6 +51,7 @@ model User {
   usedQuota     Int       @default(0) @map("used_quota")
   // number of searches left for the user
   quota         Int       @default(5) @map("quota")
+  country       String?
 }
 
 model VerificationToken {
