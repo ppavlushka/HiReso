@@ -11,6 +11,7 @@ import path from "path";
 import _ from "lodash";
 import requestIp from "request-ip";
 import md5 from "md5";
+import { pushUserDataToMailchimp } from "@/lib/mailchimp";
 import IPinfoWrapper from "node-ipinfo";
 const ipinfoWrapper = new IPinfoWrapper(process.env.IPINFO_TOKEN);
 
@@ -153,31 +154,15 @@ export default async function auth(req, res) {
         }
 
         // add to mailchimp list
-        const lists = await mailchimp.lists.getAllLists();
-        if (Array.isArray(lists?.lists)) {
-          const listId = lists.lists[0].id;
-          const [fName, ...lName] = String(name || "").split(" ");
-          try {
-            const newListMember = await mailchimp.lists.addListMember(listId, {
-              email_address: email,
-              status: "subscribed",
-              merge_fields: {
-                FNAME: fName,
-                LNAME: lName.join(" "),
-                country,
-              },
-            });
-            console.log(newListMember);
-            console.log(
-              `Successfully added email ${email} to the list ${listId}. New member: ${newListMember.id}`
-            );
-          } catch (error) {
-            // do something if subsription was unsuccessful
-            console.log(
-              `Failed to add email ${email} to the list ${listId}. Error message:`,
-              error?.message
-            );
-          }
+
+        try {
+          await pushUserDataToMailchimp(user);
+        } catch (error) {
+          // do something if subsription was unsuccessful
+          console.log(
+            `Failed to add email ${email} to the mailchimp. Error message:`,
+            error?.message
+          );
         }
       },
     },
