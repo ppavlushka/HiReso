@@ -3,7 +3,7 @@ import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
-import { mailchimpTx, mailchimp } from "@/lib/mailchimp";
+import { mailchimpTx } from "@/lib/mailchimp";
 import nodemailer from "nodemailer";
 import Handlebars from "handlebars";
 import { readFileSync } from "fs";
@@ -129,7 +129,7 @@ export default async function auth(req, res) {
           console.log(`Unable to get user country. Error: ${error.message}`);
         }
 
-        const { email, name } = user;
+        const { email } = user;
         console.log("New user:", user);
         // send welcome email
         try {

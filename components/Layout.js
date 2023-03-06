@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
 //import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
@@ -32,7 +32,7 @@ const Layout = ({
   leftComponent,
   centerComponent,
 }) => {
-  const router = useRouter();
+  //const router = useRouter();
 
   const { data: session, status } = useSession();
   const user = session?.user;
