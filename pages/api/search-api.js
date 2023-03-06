@@ -5,7 +5,7 @@ import parseResult from "../../server/parse";
 // import dummyResult from "../../server/dummies/dancing-no-image-sizes";
 import dummyResult from "../../server/dummies/girl-with-flower";
 
-const DUMMY = false;
+const DUMMY = process.env.NODE_ENV !== "production";
 export default async function handler(req, res) {
   const { url } = req.query;
   //console.log(url, process.env.SERPAPI_API_KEY);

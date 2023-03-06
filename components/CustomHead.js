@@ -2,10 +2,11 @@ import React from "react";
 import Head from "next/head";
 
 function CustomHead() {
-  const siteTitle = "Search for similar images";
+  const siteTitle = "HiReso - Search for similar images";
   return (
     <Head>
-      <link rel="icon" href="/favicon.ico" />
+      <title>{siteTitle}</title>
+      <link rel="icon" href="/favicon.svg" />
       <meta name="description" content={siteTitle} />
       <meta
         property="og:image"
