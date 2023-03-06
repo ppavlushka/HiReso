@@ -96,6 +96,7 @@ export default async function auth(req, res) {
     ...authOptions,
     callbacks: {
       ...authOptions.callbacks,
+      // eslint-disable-next-line no-unused-vars
       async signIn({ user, account, profile, email, credentials }) {
         if (email?.verificationRequest) {
           // temporary save user email
