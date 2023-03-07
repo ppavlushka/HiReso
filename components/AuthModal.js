@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast";
 import { Formik, Form } from "formik";
 import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
+import { useReCaptcha } from "next-recaptcha-v3";
 import Input from "./Input";
 
 const SignInSchema = Yup.object().shape({
@@ -91,17 +92,22 @@ const AuthModal = ({
 }) => {
   const [disabled, setDisabled] = useState(false);
   const [showConfirm, setConfirm] = useState(false);
+  // Import 'executeRecaptcha' using 'useReCaptcha' hook
+  const { executeRecaptcha } = useReCaptcha();
 
   const signInWithEmail = async ({ email }) => {
     let toastId;
     try {
       toastId = toast.loading("Loading...");
       setDisabled(true);
+      // Generate ReCaptcha token
+      const recaptchaToken = await executeRecaptcha("login");
       // Perform sign in
       const { error } = await signIn("email", {
         redirect: false,
         callbackUrl: window.location.href,
         email,
+        recaptchaToken,
       });
       // Something went wrong
       if (error) {

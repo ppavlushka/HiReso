@@ -12,6 +12,7 @@ import _ from "lodash";
 import requestIp from "request-ip";
 import md5 from "md5";
 import { pushUserDataToMailchimp } from "@/lib/mailchimp";
+import { verifyRecaptchaV3Token } from "@/lib/recaptcha";
 import IPinfoWrapper from "node-ipinfo";
 const ipinfoWrapper = new IPinfoWrapper(process.env.IPINFO_TOKEN);
 
@@ -104,6 +105,20 @@ export default async function auth(req, res) {
     ...authOptions,
     callbacks: {
       ...authOptions.callbacks,
+      async signIn({ user, email }) {
+        if (email?.verificationRequest) {
+          const { recaptchaToken } = req.body;
+          const isRecapchaOk = await verifyRecaptchaV3Token(
+            recaptchaToken,
+            "login"
+          );
+          if (!isRecapchaOk) {
+            console.log("Recaptcha check failed for user:", user);
+          }
+          return isRecapchaOk;
+        }
+        return false;
+      },
     },
     events: {
       ...authOptions.events,
