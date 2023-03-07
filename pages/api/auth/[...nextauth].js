@@ -72,7 +72,7 @@ export default async function auth(req, res) {
     events: {
       ...authOptions.events,
       createUser: async ({ user }) => {
-        let clientIp, country;
+        let clientIp, countryCode;
         // get user country
         try {
           console.log(`Saving user country`);
@@ -84,18 +84,18 @@ export default async function auth(req, res) {
           console.log(`Client IP: ${clientIp}`);
           const ipInfo = await ipinfoWrapper.lookupIp(clientIp);
           console.log(ipInfo);
-          country = ipInfo.countryCode || ipInfo.country;
+          countryCode = ipInfo.countryCode || ipInfo.country;
           // save country code
-          if (country) {
+          if (countryCode) {
             console.log(
-              `Saving country code: ${country} for user: ${user.email}`
+              `Saving country code: ${countryCode} for user: ${user.email}`
             );
             console.log("process.env.NODE_ENV: ", process.env.NODE_ENV);
             await prisma.user.update({
               where: { email: user.email },
-              data: { country },
+              data: { country: countryCode },
             });
-            user.country = country;
+            user.country = countryCode;
           }
         } catch (error) {
           console.log(`Unable to get user country. Error: ${error.message}`);
