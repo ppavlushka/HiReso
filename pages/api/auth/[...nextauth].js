@@ -72,10 +72,11 @@ export default async function auth(req, res) {
       async signIn({ user, isNewUser }) {
         // get user country
         if (!user.country) {
+          user.country = await getUserCountryWithUpdate(req, user);
+        } else {
           console.log(
             `User ${user.email} country already saved: ${user.country}`
           );
-          user.country = await getUserCountryWithUpdate(req, user);
         }
         if (!isNewUser) return true;
 
