@@ -47,7 +47,6 @@ export const authOptions = {
 };
 
 export default async function auth(req, res) {
-  console.log(req.auth);
   return await NextAuth(req, res, {
     ...authOptions,
     callbacks: {
