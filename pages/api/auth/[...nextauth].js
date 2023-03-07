@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import requestIp from "request-ip";
 import md5 from "md5";
 import { pushUserDataToMailchimp } from "@/lib/mailchimp";
@@ -77,14 +77,22 @@ export default async function auth(req, res) {
         try {
           console.log(`Saving user country`);
           clientIp = requestIp.getClientIp(req);
+          clientIp =
+            process.env.NODE_ENV === "production"
+              ? requestIp.getClientIp(req)
+              : "213.179.246.240";
           console.log(`Client IP: ${clientIp}`);
           const ipInfo = await ipinfoWrapper.lookupIp(clientIp);
           console.log(ipInfo);
-          country = ipInfo.country || "UA";
+          country = ipInfo.countryCode || ipInfo.country;
           // save country code
           if (country) {
+            console.log(
+              `Saving country code: ${country} for user: ${user.email}`
+            );
+            console.log("process.env.NODE_ENV: ", process.env.NODE_ENV);
             await prisma.user.update({
-              where: { id: user.id },
+              where: { email: user.email },
               data: { country },
             });
             user.country = country;

@@ -1,6 +1,6 @@
 import { authOptions } from "pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth/next";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import _ from "lodash";
 import { pushUserDataToMailchimp } from "@/lib/mailchimp";
 
