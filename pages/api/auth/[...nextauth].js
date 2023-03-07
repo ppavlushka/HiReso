@@ -3,45 +3,13 @@ import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
-import { mailchimpTx } from "@/lib/mailchimp";
-import Handlebars from "handlebars";
-import { readFileSync } from "fs";
-import path from "path";
-import _ from "lodash";
 import requestIp from "request-ip";
 import md5 from "md5";
 import { pushUserDataToMailchimp } from "@/lib/mailchimp";
 import { verifyRecaptchaV3Token } from "@/lib/recaptcha";
 import IPinfoWrapper from "node-ipinfo";
 const ipinfoWrapper = new IPinfoWrapper(process.env.IPINFO_TOKEN);
-
-const emailsDir = path.resolve(process.cwd(), "emails");
-
-const sendVerificationRequest = async ({ identifier, url }) => {
-  const emailFile = readFileSync(path.join(emailsDir, "confirm-email.html"), {
-    encoding: "utf8",
-  });
-  const emailTemplate = Handlebars.compile(emailFile);
-  const html = emailTemplate({
-    base_url: process.env.NEXTAUTH_URL,
-    signin_url: url,
-    email: identifier,
-  });
-
-  // mailchimp transactional
-  const response = await mailchimpTx.messages.send({
-    message: {
-      from_email: process.env.MAILCHIMP_FROM_EMAIL,
-      subject: "HiReso Login Verification",
-      html,
-      to: [{ email: identifier, type: "to" }],
-    },
-  });
-  console.log(response);
-  if (!["queued", "sent"].includes(_.get(response, "[0]status"))) {
-    throw new Error(response.message || "Failed to send verification email");
-  }
-};
+import { sendVerificationRequest, sendWelcomeEmail } from "@/lib/emails";
 
 export const authOptions = {
   pages: {
@@ -129,22 +97,7 @@ export default async function auth(req, res) {
         console.log("New user:", user);
         // send welcome email
         try {
-          const emailFile = readFileSync(path.join(emailsDir, "welcome.html"), {
-            encoding: "utf8",
-          });
-          const emailTemplate = Handlebars.compile(emailFile);
-          await transporter.sendMail({
-            from: `"✨ HiReso" ${process.env.EMAIL_FROM}`,
-            to: email,
-            subject: "Welcome to HiReso! 🎉",
-            html: emailTemplate({
-              base_url: process.env.NEXTAUTH_URL,
-              support_email: "info@hireso.io",
-            }),
-          });
-          console.log(
-            `Successfully sent welcome email to ${email}. New user id: ${user.id}`
-          );
+          await sendWelcomeEmail(user);
         } catch (error) {
           console.log(`❌ Unable to send welcome email to user (${email})`);
         }
