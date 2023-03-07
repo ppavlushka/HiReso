@@ -4,7 +4,6 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { mailchimpTx } from "@/lib/mailchimp";
-import nodemailer from "nodemailer";
 import Handlebars from "handlebars";
 import { readFileSync } from "fs";
 import path from "path";
@@ -15,17 +14,6 @@ import { pushUserDataToMailchimp } from "@/lib/mailchimp";
 import { verifyRecaptchaV3Token } from "@/lib/recaptcha";
 import IPinfoWrapper from "node-ipinfo";
 const ipinfoWrapper = new IPinfoWrapper(process.env.IPINFO_TOKEN);
-
-// Email sender
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_SERVER_HOST,
-  port: process.env.EMAIL_SERVER_PORT,
-  auth: {
-    user: process.env.EMAIL_SERVER_USER,
-    pass: process.env.EMAIL_SERVER_PASSWORD,
-  },
-  secure: true,
-});
 
 const emailsDir = path.resolve(process.cwd(), "emails");
 
@@ -39,13 +27,6 @@ const sendVerificationRequest = async ({ identifier, url }) => {
     signin_url: url,
     email: identifier,
   });
-  // my own smtp server
-  /* transporter.sendMail({
-    from: `"✨ HiReso" ${process.env.EMAIL_FROM}`,
-    to: identifier,
-    subject: "HiReso Login Verification",
-    html,
-  }); */
 
   // mailchimp transactional
   const response = await mailchimpTx.messages.send({
@@ -117,7 +98,7 @@ export default async function auth(req, res) {
           }
           return isRecapchaOk;
         }
-        return false;
+        return true;
       },
     },
     events: {
