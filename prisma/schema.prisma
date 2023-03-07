@@ -63,8 +63,8 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model UserData {
-  id    String  @id @default(cuid())
-  name  String?
-  email String? @unique
-}
+// model UserData {
+//   id    String  @id @default(cuid())
+//   name  String?
+//   email String? @unique
+// }

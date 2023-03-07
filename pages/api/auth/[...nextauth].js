@@ -3,13 +3,11 @@ import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
-import requestIp from "request-ip";
 import md5 from "md5";
 import { pushUserDataToMailchimp } from "@/lib/mailchimp";
 import { verifyRecaptchaV3Token } from "@/lib/recaptcha";
-import IPinfoWrapper from "node-ipinfo";
-const ipinfoWrapper = new IPinfoWrapper(process.env.IPINFO_TOKEN);
 import { sendVerificationRequest, sendWelcomeEmail } from "@/lib/emails";
+import getUserCountryWithUpdate from "@/lib/country";
 
 export const authOptions = {
   pages: {
@@ -71,35 +69,15 @@ export default async function auth(req, res) {
     },
     events: {
       ...authOptions.events,
-      createUser: async ({ user }) => {
-        let clientIp, countryCode;
+      async signIn({ user, isNewUser }) {
         // get user country
-        try {
-          console.log(`Saving user country`);
-          clientIp = requestIp.getClientIp(req);
-          clientIp =
-            process.env.NODE_ENV === "production"
-              ? requestIp.getClientIp(req)
-              : "213.179.246.240";
-          console.log(`Client IP: ${clientIp}`);
-          const ipInfo = await ipinfoWrapper.lookupIp(clientIp);
-          console.log(ipInfo);
-          countryCode = ipInfo.countryCode || ipInfo.country;
-          // save country code
-          if (countryCode) {
-            console.log(
-              `Saving country code: ${countryCode} for user: ${user.email}`
-            );
-            console.log("process.env.NODE_ENV: ", process.env.NODE_ENV);
-            await prisma.user.update({
-              where: { email: user.email },
-              data: { country: countryCode },
-            });
-            user.country = countryCode;
-          }
-        } catch (error) {
-          console.log(`Unable to get user country. Error: ${error.message}`);
+        if (!user.country) {
+          console.log(
+            `User ${user.email} country already saved: ${user.country}`
+          );
+          user.country = await getUserCountryWithUpdate(req, user);
         }
+        if (!isNewUser) return true;
 
         const { email } = user;
         console.log("New user:", user);
@@ -121,6 +99,7 @@ export default async function auth(req, res) {
             error?.message
           );
         }
+        return true;
       },
     },
   });
