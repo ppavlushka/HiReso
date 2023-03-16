@@ -25,6 +25,18 @@ const menuItems = [
 
 export const LayoutContext = React.createContext(null);
 
+const Brand = ({ isHome }) => {
+  return isHome ? (
+    <div className="flex items-center space-x-1 relative bottom-0.5">
+      <Logo className="shrink-0" />
+    </div>
+  ) : (
+    <Link href="/" className="flex items-center space-x-1 relative bottom-0.5">
+      <Logo className="shrink-0" />
+    </Link>
+  );
+};
+
 const Layout = ({
   children = null,
   mainClassName = "",
@@ -54,19 +66,9 @@ const Layout = ({
         <header className="w-full">
           <div className="h-full mx-auto">
             <div className="h-full px-10 py-6 flex justify-between items-start space-x-4">
-              {isHome ? (
-                <div></div>
-              ) : (
-                <>
-                  <Link
-                    href="/"
-                    className="flex items-center space-x-1 relative bottom-0.5"
-                  >
-                    <Logo className="shrink-0" />
-                  </Link>
-                  {leftComponent}
-                </>
-              )}
+              <Brand isHome={isHome} />
+              {leftComponent}
+
               <div className="flex-1 ">
                 <div className="hidden lg:flex justify-center items-center">
                   {centerComponent}
@@ -164,22 +166,18 @@ const Layout = ({
                   </Menu>
                 ) : (
                   <>
-                    {/*  <button
-                      onClick={() => {
-                        session?.user
-                          ? router.push("/create")
-                          : openModal({ showSignIn: true });
-                      }}
+                    <Link
+                      href="/faq"
                       className="hidden sm:block px-5 py-3 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition rounded-[5px]"
                     >
-                      Login
-                    </button> */}
+                      FAQ
+                    </Link>
                     <button
                       type="button"
                       onClick={() => openModal({ showSignIn: false })}
                       className="ml-2.5 px-5 py-3 rounded-[5px] bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white transition-colors"
                     >
-                      Sign Up
+                      Get Started
                     </button>
                   </>
                 )}

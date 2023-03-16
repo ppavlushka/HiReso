@@ -11,7 +11,7 @@ export default function App({
   return (
     <>
       <AuthProvider session={session}>
-        <ThemeProvider attribute="class">
+        <ThemeProvider attribute="class" enableSystem={false}>
           <ReCaptchaProvider
             siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
           >

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
@@ -10,7 +10,7 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
   const user = session?.user;
   const isLoadingUser = status === "loading";
   const canDownload = user && !isLoadingUser && user.availableQuota > 0;
-  const [downloaded, setDownloaded] = useState(false);
+  const [tracked, setTracked] = useState(false);
 
   const { openModal } = useContext(LayoutContext);
   const handleDownload = async (evt) => {
@@ -23,10 +23,10 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
       if (!user) return openModal();
       return toast.error("You have reached your quota limit.");
     }
-    if (downloaded) return;
+    if (tracked) return;
     try {
       await track();
-      setDownloaded(true);
+      setTracked(true);
     } catch (error) {
       const message =
         (error &&
@@ -41,6 +41,11 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
       document.dispatchEvent(event);
     }
   };
+
+  // reset tracked state when searchUrl changes
+  useEffect(() => {
+    setTracked(false);
+  }, [searchUrl]);
 
   return (
     <div className="w-full md:max-w-2xl lg:max-w-screen-lg mx-auto">

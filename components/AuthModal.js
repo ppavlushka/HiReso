@@ -49,16 +49,23 @@ const Confirm = ({
       >
         <div className="flex items-center justify h-full  p-8">
           <div className="overflow-hidden transition-all transform">
-            <div className="text-2xl font-bold mb-3">
-              Confirm your email address
-            </div>
+            <div className="text-2xl font-bold mb-3">Check Your Email</div>
             <p className="text-muted mb-6">
-              We sent an email to <strong>{email ?? ""}</strong>
+              We&apos;ve sent a magic link to your inbox {email || ""}
             </p>
 
             <p className="mb-6">
-              Please confirm your email address by clicking the link we just
-              sent to your inbox
+              If you don&apos;t see it in your inbox, please check your spam or
+              junk folder. If you entered the wrong email address, you can click
+              the &quot;Change Email&quot; button below to update it. If you
+              still don&apos;t receive the email,{" "}
+              <a
+                href="mailto:info@hireso.io"
+                className="underline underline-offset-4 hover:text-custom-hoverblue"
+              >
+                contact us
+              </a>
+              .
             </p>
             <p className="mb-6">
               Didn’t get a code?
@@ -179,14 +186,16 @@ const AuthModal = ({
             leaveTo="opacity-0"
           >
             <div className="fixed inset-0 flex items-end justify-center">
-              {!showSignIn && !showConfirm && (
+              {!showConfirm && (
                 <div className="text-white dark:text-black mb-7">
-                  <span className="mr-1.5">By signing up you agree to our</span>
+                  <span className="mr-1.5">
+                    By clicking &quot;Send Magic Link&quot; you agree to our
+                  </span>
                   <Link
                     href="/terms-and-conditions"
                     className="font-bold underline hover:text-custom-hoverblue transition-colors"
                   >
-                    Terms and Conditions & Privacy Policy
+                    Terms of Service and Privacy Policy
                   </Link>
                 </div>
               )}
@@ -225,13 +234,11 @@ const AuthModal = ({
                     as="div"
                     className="font-bold text-xl sm:text-2xl mb-2"
                   >
-                    {showSignIn ? "Login" : "Create an Account"}
+                    Get Started in Seconds
                   </Dialog.Title>
 
                   <Dialog.Description className="text-muted text-base mb-7">
-                    {showSignIn
-                      ? "Welcome Back! Please enter your details."
-                      : "Enter the fields below to get started"}
+                    Sign up or log in with just one click!
                   </Dialog.Description>
 
                   <div className="">
@@ -273,11 +280,7 @@ const AuthModal = ({
                             disabled={disabled || !isValid}
                             className="px-5 py-4 w-full text-lg text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none rounded-[10px]"
                           >
-                            {isSubmitting
-                              ? "Loading..."
-                              : showSignIn
-                              ? "Login"
-                              : "Create Account"}
+                            {isSubmitting ? "Sending..." : "Send Magic Link"}
                           </button>
 
                           <Confirm

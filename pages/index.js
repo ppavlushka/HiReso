@@ -7,7 +7,6 @@ import { toast } from "react-hot-toast";
 import { search } from "../lib/search";
 import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
-import Logo from "../components/Logo";
 
 export default function Home() {
   const router = useRouter();
@@ -46,7 +45,7 @@ export default function Home() {
       return;
     }
     fetchData(searchUrl);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchUrl]);
 
   useEffect(() => {
@@ -70,7 +69,7 @@ export default function Home() {
       searchUrl={searchUrl}
       isSearching={isSearching}
       onSubmit={handleSubmit}
-      className="w-full md:max-w-xl"
+      className="w-full md:max-w-xl relative -top-12"
       error={error?.message}
     />
   );
@@ -79,13 +78,12 @@ export default function Home() {
     <Layout
       mainClassName="flex align-items-center"
       isHome={!isResultsPage}
-      centerComponent={isResultsPage ? formComponent : null}
+      centerComponent={formComponent}
     >
       {!isResultsPage ? (
         <div
-          className={"w-full flex flex-col justify-center items-center py-5 "}
+          className={"w-full flex flex-col justify-center items-center py-5"}
         >
-          <Logo className="mb-16" />
           {formComponent}
         </div>
       ) : (
