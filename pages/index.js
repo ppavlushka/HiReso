@@ -75,11 +75,7 @@ export default function Home() {
   );
 
   return (
-    <Layout
-      mainClassName="flex align-items-center"
-      isHome={!isResultsPage}
-      centerComponent={formComponent}
-    >
+    <Layout mainClassName="flex align-items-center" isHome={!isResultsPage}>
       {!isResultsPage ? (
         <div
           className={"w-full flex flex-col justify-center items-center py-5"}
