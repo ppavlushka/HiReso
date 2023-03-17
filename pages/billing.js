@@ -2,36 +2,35 @@ import React from "react";
 import Layout from "../components/Layout";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/router";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-);
+const CHECKOUT_SESSION_API_ENDPOINT = "/api/stripe/checkout";
 
-export default function PlansPage() {
+export default function BillingPage() {
   const [plans, setPlans] = useState({});
+  const router = useRouter();
+  const { status } = router.query;
 
   useEffect(() => {
     async function fetchPlans() {
-      const response = await fetch("/api/stripe/products");
-      const data = await response.json();
-      setPlans(data);
+      const response = await axios.get("/api/stripe/products");
+      setPlans(response.data);
     }
     fetchPlans();
   }, []);
 
-  async function handleClick(planId) {
-    const stripe = await stripePromise;
-    const { error } = await stripe.redirectToCheckout({
-      mode: "subscription",
-      lineItems: [{ price: planId, quantity: 1 }],
-      successUrl: `${window.location.origin}/success`,
-      cancelUrl: `${window.location.origin}/cancel`,
-    });
-    if (error) {
-      console.error(error);
+  // Display toast message dependint on status
+  useEffect(() => {
+    if (status && status === "success") {
+      toast.success("Payment Successful");
     }
-  }
+    if (status && status === "cancel") {
+      // display toast warning
+      toast.error("Payment cancelled");
+    }
+  }, [status]);
 
   return (
     <Layout mainClassName="">
@@ -40,10 +39,19 @@ export default function PlansPage() {
         {plans?.prices
           ?.filter(({ type }) => type == "recurring")
           .map((price) => (
-            <div
+            <form
               key={price.id}
+              action={CHECKOUT_SESSION_API_ENDPOINT}
+              method="POST"
               className="bg-white rounded-lg shadow-lg p-6 text-center"
             >
+              <input
+                type="hidden"
+                name={"returnUrl"}
+                defaultValue={`${window.location.origin}${router.pathname}`}
+              />
+              <input type="hidden" name={"priceId"} defaultValue={price.id} />
+
               <h2 className="text-2xl font-bold mb-2">{price.product?.name}</h2>
               <p className="text-gray-600 mb-4">{price.product?.description}</p>
               {/* centered image */}
@@ -64,12 +72,12 @@ export default function PlansPage() {
                 / {price.recurring?.interval}
               </div>
               <button
+                type="submit"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => handleClick(price.id)}
               >
                 Subscribe
               </button>
-            </div>
+            </form>
           ))}
       </div>
       <h1 className="text-4xl font-bold mb-10">One Time Purchases</h1>
@@ -77,10 +85,19 @@ export default function PlansPage() {
         {plans?.prices
           ?.filter(({ type }) => type !== "recurring")
           .map((price) => (
-            <div
+            <form
               key={price.id}
+              action={CHECKOUT_SESSION_API_ENDPOINT}
+              method="POST"
               className="bg-white rounded-lg shadow-lg p-6 text-center"
             >
+              <input
+                type="hidden"
+                name={"returnUrl"}
+                defaultValue={`${window.location.origin}${router.pathname}`}
+              />
+              <input type="hidden" name={"priceId"} defaultValue={price.id} />
+
               <h2 className="text-2xl font-bold mb-2">{price.product?.name}</h2>
               <p className="text-gray-600 mb-4">{price.product?.description}</p>
               {/* centered image */}
@@ -99,13 +116,10 @@ export default function PlansPage() {
                   currency: price.currency,
                 }).format(price.unit_amount / 100)}{" "}
               </div>
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => handleClick(price.id)}
-              >
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Buy
               </button>
-            </div>
+            </form>
           ))}
       </div>
     </Layout>
