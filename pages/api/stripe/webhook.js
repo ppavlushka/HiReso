@@ -41,18 +41,37 @@ export default async function checkoutsWebhooksHandler(req, res) {
         const customerId = session.customer;
         const subscriptionId = session.subscription;
         const userId = session.client_reference_id;
+        const { mode } = session;
 
-        const subscription = await stripe.subscriptions.retrieve(
-          subscriptionId
-        );
+        if (mode === "subscription") {
+          const subscription = await stripe.subscriptions.retrieve(
+            subscriptionId
+          );
 
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            customerId,
-            subscriptionId: subscription.id,
-          },
-        });
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              customerId,
+              subscriptionId: subscription.id,
+              quota: {
+                increment: 100,
+              },
+            },
+          });
+        }
+        if (mode === "payment") {
+          // get quota from metadata
+          const quota = Number(session.metadata?.quota) || 0;
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              customerId,
+              quota: {
+                increment: quota,
+              },
+            },
+          });
+        }
 
         break;
       }
@@ -69,26 +88,25 @@ export default async function checkoutsWebhooksHandler(req, res) {
 
       case StripeWebhooks.SubscriptionDeleted: {
         const subscription = event.data.object;
-
-        // await deleteOrganizationSubscription(subscription.id);
-
+        // remove subscriptionId on user with subscriptionId === subscription.id
+        await prisma.user.updateMany({
+          where: { subscriptionId: subscription.id },
+          data: { subscriptionId: null },
+        });
+        // log subscription deletion
+        console.log("Subscription deleted", subscription.id);
         break;
       }
 
       case StripeWebhooks.SubscriptionUpdated: {
-        const subscription = event.data.object;
-
+        // const subscription = event.data.object;
         // await onSubscriptionUpdated(subscription);
-
         break;
       }
 
       case StripeWebhooks.PaymentFailed: {
-        const session = event.data.object;
-
-        // TODO: handle this properly
+        // const session = event.data.object;
         // onPaymentFailed(session);
-
         break;
       }
     }

@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next";
 import prisma from "lib/prisma";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-async function createStripeCheckout({ returnUrl, user, price }) {
+async function createStripeCheckout({ returnUrl, user, price, product }) {
   const clientReferenceId = user.id;
   const customer = user.customerId || undefined;
   const mode = price.type === "recurring" ? "subscription" : "payment";
@@ -25,6 +25,7 @@ async function createStripeCheckout({ returnUrl, user, price }) {
     success_url: successUrl,
     cancel_url: cancelUrl,
     client_reference_id: clientReferenceId,
+    metadata: product.metadata,
   });
 }
 
@@ -48,11 +49,14 @@ async function CreateStripeSession(req, res) {
     }
     // get stripe price
     const price = await stripe.prices.retrieve(priceId);
+    // get product
+    const product = await stripe.products.retrieve(price.product);
 
     const { url } = await createStripeCheckout({
       returnUrl,
       user,
       price,
+      product,
     });
 
     // redirect user back based on the response

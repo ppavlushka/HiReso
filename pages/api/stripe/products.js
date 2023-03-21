@@ -14,7 +14,9 @@ export default async function handler(req, res) {
       }));
     // get user subscription
     const subscription =
-      user && (await stripe.subscriptions.retrieve(user.subscriptionId));
+      user &&
+      user.subscriptionId &&
+      (await stripe.subscriptions.retrieve(user.subscriptionId));
 
     const prices = await stripe.prices.list({ active: true });
     const products = await stripe.products.list({ active: true });

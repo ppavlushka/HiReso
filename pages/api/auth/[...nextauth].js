@@ -35,7 +35,7 @@ export const authOptions = {
       session.user.quota = user.quota;
       session.user.availableQuota =
         Math.max(user.quota - user.usedQuota, 0) || 0;
-      session.user.showBilling = !!user.subscriptionId;
+      session.user.showBilling = !!user.customerId;
       // gravatar user image
       if (!user.image) {
         session.user.image = `https://www.gravatar.com/avatar/${md5(

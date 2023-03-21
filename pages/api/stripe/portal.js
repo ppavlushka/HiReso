@@ -30,12 +30,12 @@ export default async function billingPortalRedirectHandler(req, res) {
     // remove optional query params from the return url
     const returnUrlWithoutQueryParams = returnUrl.split("?")[0];
 
-    const { url } = await stripe.billingPortal.sessions.create({
+    const portalSession = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: returnUrlWithoutQueryParams,
     });
-
-    res.redirect(301, url);
+    console.log("Stripe portal session created.", portalSession);
+    res.redirect(301, portalSession.url);
   } catch (e) {
     console.error(e, `Stripe Billing Portal redirect error`);
 

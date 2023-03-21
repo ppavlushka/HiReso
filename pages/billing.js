@@ -45,11 +45,17 @@ function Plan({ price, buttonLabel = "Subscribe", isActive = false }) {
         {price.type === "recurring" && " / " + price.recurring?.interval}
       </div>
       {isActive ? (
-        <div className="text-green-500 font-bold py-2 px-4 rounded">
+        <button
+          type="submit"
+          className="text-green-500 font-bold py-2 px-4 rounded"
+        >
           Subscribed
-        </div>
+        </button>
       ) : (
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
           {buttonLabel}
         </button>
       )}
@@ -107,12 +113,14 @@ export default function BillingPage() {
         )}
         {session?.user?.showBilling && (
           // eslint-disable-next-line @next/next/no-html-link-for-pages
-          <a
-            href="/api/stripe/portal"
-            className=" px-5 py-3 rounded-[5px] bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white transition-colors"
-          >
-            Manage Billing
-          </a>
+          <form action="/api/stripe/portal" method="POST">
+            <button
+              type="submit"
+              className=" px-5 py-3 rounded-[5px] bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white transition-colors"
+            >
+              Manage Billing
+            </button>
+          </form>
         )}
       </div>
       <h1 className="text-4xl font-bold mb-10">Plans</h1>
