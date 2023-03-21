@@ -1,6 +1,6 @@
 import { authOptions } from "pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth/next";
-import prisma from "@/lib/prisma";
+import prisma from "lib/prisma";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 async function createStripeCheckout({ returnUrl, user, price }) {

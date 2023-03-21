@@ -1,8 +1,8 @@
 import { authOptions } from "pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth/next";
-import prisma from "@/lib/prisma";
+import prisma from "lib/prisma";
 import _ from "lodash";
-import { pushUserDataToMailchimp } from "@/lib/mailchimp";
+import { pushUserDataToMailchimp } from "lib/mailchimp";
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);

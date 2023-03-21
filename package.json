@@ -7,7 +7,7 @@
     "export": "next export",
     "vercel-build": "prisma generate && next build",
     "prisma:generate": "prisma generate",
-    "reset-db": "prisma db push --accept-data-loss",
+    "reset-db": "prisma generate && prisma db push --accept-data-loss",
     "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe/webhook"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
     "node-ipinfo": "^3.4.0",
     "nodemailer": "^6.9.1",
     "prop-types": "^15.8.1",
+    "raw-body": "^2.5.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.0",
@@ -47,6 +48,7 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.2.3",
     "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@types/react": "18.0.28",
     "autoprefixer": "^10.4.13",
     "eslint": "8.35.0",
     "eslint-config-next": "13.2.1",
