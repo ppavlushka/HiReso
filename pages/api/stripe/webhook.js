@@ -99,8 +99,14 @@ export default async function checkoutsWebhooksHandler(req, res) {
       }
 
       case StripeWebhooks.SubscriptionUpdated: {
-        // const subscription = event.data.object;
-        // await onSubscriptionUpdated(subscription);
+        const subscription = event.data.object;
+        if (subscription.status === "active") {
+          // set subscriptionId on user with customerId
+          await prisma.user.updateMany({
+            where: { customerId: subscription.customer },
+            data: { subscriptionId: subscription.id },
+          });
+        }
         break;
       }
 

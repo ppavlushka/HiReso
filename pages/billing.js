@@ -63,8 +63,42 @@ function Plan({ price, buttonLabel = "Subscribe", isActive = false }) {
   );
 }
 
+function SubscriptionStatus({ subscription }) {
+  if (subscription.status !== "active") {
+    return (
+      <>
+        <p>Your subscription is not active</p>
+        <p>Use the button below to activate your subscription.</p>
+      </>
+    );
+  }
+  if (subscription.cancel_at_period_end) {
+    return (
+      <>
+        <p>
+          Your subscription has been cancelled. It becames inactive since{" "}
+          {new Date(
+            subscription?.current_period_end * 1000
+          ).toLocaleDateString()}
+        </p>
+        <p>Use the button below to reactivate your subscription.</p>
+      </>
+    );
+  }
+  // subscription is active
+  return (
+    <>
+      <p>
+        Your subscription is active and will be renewed on{" "}
+        {new Date(subscription?.current_period_end * 1000).toLocaleDateString()}
+      </p>
+      <p>Use the button below to cancel your subscription.</p>
+    </>
+  );
+}
+
 export default function BillingPage() {
-  const [plans, setPlans] = useState({});
+  const [plans, setPlans] = useState(null);
   const router = useRouter();
   const { status } = router.query;
   const { data: session } = useSession();
@@ -96,21 +130,17 @@ export default function BillingPage() {
     <Layout mainClassName="">
       <h1 className="text-4xl font-bold mb-5">Your subscription</h1>
       <div className="mb-24">
-        {plans?.subscription ? (
-          <div>
-            {/* display subscription end date */}
-            <div className="mb-4">
-              {plans.subscription?.cancel_at_period_end
-                ? "Your subscription will end on "
-                : "Your subscription ends on "}
-              {new Date(
-                plans.subscription?.current_period_end * 1000
-              ).toLocaleDateString()}
+        {plans &&
+          (plans?.subscription ? (
+            <div>
+              {/* display subscription end date */}
+              <div className="mb-4">
+                <SubscriptionStatus subscription={plans.subscription} />
+              </div>
             </div>
-          </div>
-        ) : (
-          <div>You are on free plan</div>
-        )}
+          ) : (
+            <div>You are on free plan</div>
+          ))}
         {session?.user?.showBilling && (
           // eslint-disable-next-line @next/next/no-html-link-for-pages
           <form action="/api/stripe/portal" method="POST">
