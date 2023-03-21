@@ -36,6 +36,7 @@ export default async function checkoutsWebhooksHandler(req, res) {
 
   try {
     switch (event.type) {
+      case StripeWebhooks.AsyncPaymentSuccess:
       case StripeWebhooks.Completed: {
         const session = event.data.object;
         const customerId = session.customer;
@@ -76,16 +77,6 @@ export default async function checkoutsWebhooksHandler(req, res) {
         break;
       }
 
-      case StripeWebhooks.AsyncPaymentSuccess: {
-        const session = event.data.object;
-        const customerId = session.customer;
-        const userId = session.client_reference_id;
-
-        // await activatePendingSubscription(organizationId);
-
-        break;
-      }
-
       case StripeWebhooks.SubscriptionDeleted: {
         const subscription = event.data.object;
         // remove subscriptionId on user with subscriptionId === subscription.id
@@ -106,13 +97,16 @@ export default async function checkoutsWebhooksHandler(req, res) {
             where: { customerId: subscription.customer },
             data: { subscriptionId: subscription.id },
           });
+          // log subscription update
+          console.log("Stripe subscription updated", subscription.id);
         }
         break;
       }
 
       case StripeWebhooks.PaymentFailed: {
-        // const session = event.data.object;
+        const session = event.data.object;
         // onPaymentFailed(session);
+        console.log("Stripe payment failed", session.id);
         break;
       }
     }

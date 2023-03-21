@@ -128,31 +128,35 @@ export default function BillingPage() {
 
   return (
     <Layout mainClassName="">
-      <h1 className="text-4xl font-bold mb-5">Your subscription</h1>
-      <div className="mb-24">
-        {plans &&
-          (plans?.subscription ? (
-            <div>
-              {/* display subscription end date */}
-              <div className="mb-4">
-                <SubscriptionStatus subscription={plans.subscription} />
-              </div>
-            </div>
-          ) : (
-            <div>You are on free plan</div>
-          ))}
-        {session?.user?.showBilling && (
-          // eslint-disable-next-line @next/next/no-html-link-for-pages
-          <form action="/api/stripe/portal" method="POST">
-            <button
-              type="submit"
-              className=" px-5 py-3 rounded-[5px] bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white transition-colors"
-            >
-              Manage Billing
-            </button>
-          </form>
-        )}
-      </div>
+      {session && (
+        <>
+          <h1 className="text-4xl font-bold mb-5">Your subscription</h1>
+          <div className="mb-24">
+            {plans &&
+              (plans?.subscription ? (
+                <div>
+                  {/* display subscription end date */}
+                  <div className="mb-4">
+                    <SubscriptionStatus subscription={plans.subscription} />
+                  </div>
+                </div>
+              ) : (
+                <div>You are on free plan</div>
+              ))}
+            {session?.user?.showBilling && (
+              // eslint-disable-next-line @next/next/no-html-link-for-pages
+              <form action="/api/stripe/portal" method="POST">
+                <button
+                  type="submit"
+                  className=" px-5 py-3 rounded-[5px] bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white transition-colors"
+                >
+                  Manage Billing
+                </button>
+              </form>
+            )}
+          </div>
+        </>
+      )}
       <h1 className="text-4xl font-bold mb-10">Plans</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-24">
         {plans?.prices
