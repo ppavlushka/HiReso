@@ -13,13 +13,14 @@ export default async function handler(req, res) {
         where: { email: session.user.email },
       }));
     // get user subscription
-    const subscription =
+    // eslint-disable-next-line no-undef
+    const [subscription, prices, products] = await Promise.all([
       user &&
-      user.subscriptionId &&
-      (await stripe.subscriptions.retrieve(user.subscriptionId));
-
-    const prices = await stripe.prices.list({ active: true });
-    const products = await stripe.products.list({ active: true });
+        user.subscriptionId &&
+        stripe.subscriptions.retrieve(user.subscriptionId),
+      stripe.prices.list({ active: true }),
+      stripe.products.list({ active: true }),
+    ]);
     res.status(200).json({
       prices: prices.data.map((price) => ({
         ...price,

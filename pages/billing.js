@@ -99,15 +99,24 @@ function SubscriptionStatus({ subscription }) {
 
 export default function BillingPage() {
   const [plans, setPlans] = useState(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { status } = router.query;
   const { data: session } = useSession();
 
-  useEffect(() => {
-    async function fetchPlans() {
+  async function fetchPlans() {
+    if (loading) return;
+    setLoading(true);
+    try {
       const response = await axios.get("/api/stripe/products");
       setPlans(response.data);
+    } catch (error) {
+      toast.error("Error fetching plans");
+    } finally {
+      setLoading(false);
     }
+  }
+  useEffect(() => {
     fetchPlans();
   }, []);
 
@@ -157,27 +166,33 @@ export default function BillingPage() {
           </div>
         </>
       )}
-      <h1 className="text-4xl font-bold mb-10">Plans</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-24">
-        {plans?.prices
-          ?.filter(({ type }) => type == "recurring")
-          .map((price) => (
-            <Plan
-              key={price.id}
-              price={price}
-              buttonLabel="Subscribe"
-              isActive={plans.subscription?.plan?.id === price.id}
-            />
-          ))}
-      </div>
-      <h1 className="text-4xl font-bold mb-10">One Time Purchases</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {plans?.prices
-          ?.filter(({ type }) => type !== "recurring")
-          .map((price) => (
-            <Plan key={price.id} price={price} buttonLabel="Buy" />
-          ))}
-      </div>
+      {loading ? (
+        <div className="text-center text-xl">Loading plans and prices...</div>
+      ) : (
+        <>
+          <h1 className="text-4xl font-bold mb-10">Plans</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-24">
+            {plans?.prices
+              ?.filter(({ type }) => type == "recurring")
+              .map((price) => (
+                <Plan
+                  key={price.id}
+                  price={price}
+                  buttonLabel="Subscribe"
+                  isActive={plans.subscription?.plan?.id === price.id}
+                />
+              ))}
+          </div>
+          <h1 className="text-4xl font-bold mb-10">One Time Purchases</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {plans?.prices
+              ?.filter(({ type }) => type !== "recurring")
+              .map((price) => (
+                <Plan key={price.id} price={price} buttonLabel="Buy" />
+              ))}
+          </div>
+        </>
+      )}
     </Layout>
   );
 }
