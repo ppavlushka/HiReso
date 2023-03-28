@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import { track } from "../lib/track";
 import { LayoutContext } from "./Layout";
 
-const SearchResults = ({ searchUrl, images, limit = 6 }) => {
+const SearchResults = ({ searchUrl, images, limit = 6, children }) => {
   const { data: session, status } = useSession();
   const user = session?.user;
   const isLoadingUser = status === "loading";
@@ -77,6 +77,7 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
           </a>
         ))}
       </div>
+      {children}
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast";
 import { search } from "../lib/search";
 import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
+import Upscaler from "../components/Upscaler";
 
 export default function Home() {
   const router = useRouter();
@@ -84,7 +85,9 @@ export default function Home() {
         </div>
       ) : (
         <div className="relative flex-1 flex items-center px-3 py-6">
-          <SearchResults images={images} searchUrl={result?.searchUrl} />
+          <SearchResults images={images} searchUrl={result?.searchUrl}>
+            <Upscaler searchUrl={result?.searchUrl} />
+          </SearchResults>
         </div>
       )}
     </Layout>
