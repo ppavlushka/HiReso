@@ -50,7 +50,7 @@ const SearchResults = ({ searchUrl, images, limit = 6, children }) => {
   return (
     <div className="w-full md:max-w-2xl lg:max-w-screen-lg mx-auto">
       <div className="text-lg font-medium mb-6">Preview</div>
-      <div className="relative w-full aspect-video mb-16">
+      <div className="relative w-full aspect-video mb-6">
         <Image
           src={searchUrl}
           fill
@@ -60,6 +60,7 @@ const SearchResults = ({ searchUrl, images, limit = 6, children }) => {
           unoptimized
         />
       </div>
+      {children}
       <div className="text-lg font-medium mb-4">Download Links:</div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3.5 text-lg">
         {images.slice(0, limit).map((image, index) => (
@@ -77,7 +78,6 @@ const SearchResults = ({ searchUrl, images, limit = 6, children }) => {
           </a>
         ))}
       </div>
-      {children}
     </div>
   );
 };
