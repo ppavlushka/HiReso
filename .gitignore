@@ -33,3 +33,5 @@ yarn-error.log*
 .env.production.local
 .vercel
 .github
+stripe.config.json
+.striperc

@@ -2,12 +2,12 @@ import NextAuth from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "@/lib/prisma";
+import prisma from "lib/prisma";
 import md5 from "md5";
-import { pushUserDataToMailchimp } from "@/lib/mailchimp";
-import { verifyRecaptchaV3Token } from "@/lib/recaptcha";
-import { sendVerificationRequest, sendWelcomeEmail } from "@/lib/emails";
-import getUserCountryWithUpdate from "@/lib/country";
+import { pushUserDataToMailchimp } from "lib/mailchimp";
+import { verifyRecaptchaV3Token } from "lib/recaptcha";
+import { sendVerificationRequest, sendWelcomeEmail } from "lib/emails";
+import getUserCountryWithUpdate from "lib/country";
 
 export const authOptions = {
   pages: {
@@ -35,6 +35,7 @@ export const authOptions = {
       session.user.quota = user.quota;
       session.user.availableQuota =
         Math.max(user.quota - user.usedQuota, 0) || 0;
+      session.user.showBilling = !!user.customerId;
       // gravatar user image
       if (!user.image) {
         session.user.image = `https://www.gravatar.com/avatar/${md5(

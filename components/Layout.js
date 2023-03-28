@@ -15,8 +15,9 @@ import Logo from "../components/Logo";
 const menuItems = [
   {
     label: "My profile",
-    href: "/",
+    href: "/billing",
   },
+  
   {
     label: "Logout",
     onClick: signOut,

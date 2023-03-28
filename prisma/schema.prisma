@@ -40,18 +40,22 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
   // number of searches used by the user
-  usedQuota     Int       @default(0) @map("used_quota")
+  usedQuota      Int       @default(0) @map("used_quota")
   // number of searches left for the user
-  quota         Int       @default(5) @map("quota")
-  country       String?   @default("") @map("country_code")
+  quota          Int       @default(5) @map("quota")
+  country        String?   @default("") @map("country_code")
+  // stripe customer id
+  customerId     String?   @map("stripe_customer_id")
+  // stripe subscription id
+  subscriptionId String?   @map("stripe_subscription_id")
 }
 
 model VerificationToken {
