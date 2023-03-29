@@ -3,7 +3,7 @@
 ## ToDos
 
     - [ ] Add upscale to search results in popover
-    - [ ] Add proxy for upscaled images
+    - [*] Add proxy for upscaled images
     - [ ] Fix login from wrong provider for same email and add error message on login error
     - [ ] Show modal with link to billing page when user tries to upload more images than allowed
     - [ ] Check stripe webhook for payment on server
