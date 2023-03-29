@@ -176,15 +176,14 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
                             <span>Download</span>
                           </a>
                           {/* Do not suggest upscale if both widht ang height of image is more than 1500 */}
-                          {image.width < 1500 ||
-                            (image.height < 1500 && (
-                              <UpscaleForm
-                                isUpscaling={isUpscaling}
-                                onSubmit={handleUpscale}
-                                url={image.link}
-                                isCompact={true}
-                              />
-                            ))}
+                          {(image.width < 1500 || image.height < 1500) && (
+                            <UpscaleForm
+                              isUpscaling={isUpscaling}
+                              onSubmit={handleUpscale}
+                              url={image.link}
+                              isCompact={true}
+                            />
+                          )}
                         </div>
                       </div>
                     </Popover.Panel>
