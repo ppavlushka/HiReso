@@ -44,6 +44,8 @@ export default function Home({ searchUrl }) {
     }
   };
 
+  const upscaledImageUrl = `/api/predictions/images/${prediction?.prediction?.id}`;
+
   return (
     <div className="mb-11">
       <form
@@ -76,7 +78,7 @@ export default function Home({ searchUrl }) {
       {prediction?.prediction?.status == "succeeded" && (
         <div className="flex flex-col items-center mt-4">
           <a
-            href={prediction?.prediction?.output}
+            href={upscaledImageUrl}
             target="_blank"
             rel="noreferrer"
             className="py-2 flex flex-col items-center"
@@ -85,12 +87,7 @@ export default function Home({ searchUrl }) {
               Click here to download the enlarged image
             </span>
           </a>
-          <Image
-            src={prediction?.prediction?.output}
-            alt="output"
-            width={976}
-            height={400}
-          />
+          <Image src={upscaledImageUrl} alt="output" width={976} height={400} />
         </div>
       )}
     </div>
