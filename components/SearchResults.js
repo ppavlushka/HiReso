@@ -21,16 +21,8 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
   const [isUpscaling, setIsUpscaling] = useState(false);
 
   const { openModal } = useContext(LayoutContext);
-  const handleDownload = async (evt) => {
-    // const event = new Event("visibilitychange");
-    // document.dispatchEvent(event);
-    toast.dismiss();
 
-    if (!canDownload) {
-      evt.preventDefault();
-      if (!user) return openModal();
-      return toast.error("You have reached your quota limit.");
-    }
+  const trackIfNeeded = async function () {
     if (tracked) return;
     try {
       await track();
@@ -43,11 +35,18 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
           error.response.data.message) ||
         "Something went wrong!";
       toast.error(message);
-    } finally {
-      // reload session
-      const event = new Event("visibilitychange");
-      document.dispatchEvent(event);
     }
+  };
+
+  const handleDownload = async (evt) => {
+    toast.dismiss();
+
+    if (!canDownload) {
+      evt.preventDefault();
+      if (!user) return openModal();
+      return toast.error("You have reached your quota limit.");
+    }
+    await trackIfNeeded();
   };
 
   // reset tracked state when searchUrl changes
@@ -81,13 +80,10 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
         setPrediction(prediction);
       }
       if (prediction?.prediction.status == "failed") {
-        throw new Error(prediction?.prediction.error);
+        throw new Error("Failed to upscale image.");
       } else {
         toast.success("Upscaling completed!");
-        if (!tracked) {
-          await track();
-          setTracked(true);
-        }
+        trackIfNeeded();
       }
     } catch (error) {
       toast.error(error?.message || "Something went wrong");
