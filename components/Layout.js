@@ -6,6 +6,7 @@ import Image from "next/image";
 import PropTypes from "prop-types";
 import { useSession, signOut } from "next-auth/react";
 import AuthModal from "./AuthModal";
+import LimitModal from "./LimitModal";
 import { Menu, Transition } from "@headlessui/react";
 import { UserIcon, ChevronRightIcon } from "@heroicons/react/outline";
 //import { ChevronRightIcon } from "@heroicons/react/solid";
@@ -17,7 +18,7 @@ const menuItems = [
     label: "My profile",
     href: "/billing",
   },
-  
+
   {
     label: "Logout",
     onClick: signOut,
@@ -52,12 +53,18 @@ const Layout = ({
   const isLoadingUser = status === "loading";
 
   const [showModal, setShowModal] = useState(false);
+  const [showLimitModal, setShowLimitModal] = useState(false);
   const [showSignIn] = useState(true);
 
   const openModal = () => {
     setShowModal(true);
   };
   const closeModal = () => setShowModal(false);
+
+  const openLimitModal = () => {
+    setShowLimitModal(true);
+  };
+  const closeLimitModal = () => setShowLimitModal(false);
 
   return (
     <>
@@ -193,8 +200,8 @@ const Layout = ({
             mainClassName
           }
         >
-          <LayoutContext.Provider value={{ openModal }}>
-            {typeof children === "function" ? children(openModal) : children}
+          <LayoutContext.Provider value={{ openModal, openLimitModal }}>
+            {children}
           </LayoutContext.Provider>
         </main>
 
@@ -203,6 +210,7 @@ const Layout = ({
           onClose={closeModal}
           showSignIn={showSignIn}
         />
+        <LimitModal show={showLimitModal} onClose={closeLimitModal} />
       </div>
     </>
   );

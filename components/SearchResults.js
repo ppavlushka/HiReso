@@ -13,14 +13,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const SearchResults = ({ searchUrl, images, limit = 6 }) => {
   const { data: session, status } = useSession();
-  const user = session?.user;
-  const isLoadingUser = status === "loading";
-  const canDownload = user && !isLoadingUser && user.availableQuota > 0;
   const [tracked, setTracked] = useState(false);
   const [prediction, setPrediction] = useState(null);
   const [isUpscaling, setIsUpscaling] = useState(false);
+  const user = session?.user;
+  const isLoadingUser = status === "loading";
+  const canDownload = user && !isLoadingUser && user.availableQuota > 0;
 
-  const { openModal } = useContext(LayoutContext);
+  const { openModal, openLimitModal } = useContext(LayoutContext);
 
   const trackIfNeeded = async function () {
     if (tracked) return;
@@ -38,13 +38,17 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
     }
   };
 
+  const showLimitMessage = () => {
+    if (!user) return openModal();
+    openLimitModal();
+  };
+
   const handleDownload = async (evt) => {
     toast.dismiss();
 
     if (!canDownload) {
       evt.preventDefault();
-      if (!user) return openModal();
-      return toast.error("You have reached your quota limit.");
+      return showLimitMessage();
     }
     await trackIfNeeded();
   };
@@ -55,6 +59,10 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
   }, [searchUrl]);
 
   const handleUpscale = async ({ url, scale }) => {
+    toast.dismiss();
+    if (!canDownload) {
+      return showLimitMessage();
+    }
     setIsUpscaling(true);
     try {
       const response = await axios.post("/api/predictions", {
