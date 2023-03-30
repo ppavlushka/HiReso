@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast";
 import { search } from "../lib/search";
 import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
+import { signinErrors } from "../lib/signinErrors";
 
 export default function Home() {
   const router = useRouter();
@@ -14,6 +15,20 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+
+  const { error: signinError } = router.query;
+  // display messsage on signin error
+  useEffect(() => {
+    if (signinError) {
+      const errorKey = signinError.toLowerCase();
+      let message = signinErrors[errorKey];
+      const prefix = "Unable to sign in!";
+      if (errorKey !== "default") {
+        message = `${prefix}\n${message}`;
+      }
+      toast.error(message);
+    }
+  }, [signinError]);
 
   const fetchData = async (searchUrl) => {
     toast.dismiss();
