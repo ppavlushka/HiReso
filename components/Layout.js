@@ -115,7 +115,7 @@ const Layout = ({
                       leaveFrom="opacity-100 scale-100"
                       leaveTo="opacity-0 scale-95"
                     >
-                      <Menu.Items className="px-5 absolute right-0 w-48 mt-4 border-4 border-custom-inputbg dark:border-gray-600 bg-white dark:bg-black origin-top-right rounded-[3px] focus:outline-none">
+                      <Menu.Items className="absolute right-0 w-48 mt-4 border-4 border-custom-inputbg dark:border-gray-600 bg-white dark:bg-black origin-top-right rounded-[3px] focus:outline-none">
                         <div
                           className="w-0 h-0 
                             absolute z-10 -top-2.5 right-2.5
@@ -149,7 +149,7 @@ const Layout = ({
                             <ChevronRightIcon className="w-5 h-5 shrink-0 text-black dark:text-white group-hover:text-current" />
                           );
                           const linkClasses =
-                            "w-full last:border-t dark:border-gray-600 flex items-center justify-between space-x-2 py-4 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition";
+                            "w-full last:border-t dark:border-gray-600 flex items-center justify-between space-x-2 px-5 py-4 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition";
                           return (
                             <Menu.Item key={label}>
                               {href ? (
