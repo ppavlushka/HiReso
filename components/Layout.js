@@ -73,17 +73,23 @@ const Layout = ({
       <div className="min-h-screen flex flex-col">
         <header className="w-full">
           <div className="h-full mx-auto">
-            <div className="h-full px-10 py-6 flex justify-between items-start space-x-4">
+            <div className="h-full px-10 py-6 flex flex-col sm:flex-row flex-wrap sm:justify-between items-center sm:items-start space-x-4">
               <Brand isHome={isHome} />
               {leftComponent}
 
-              <div className="flex-1 ">
+              <div className="flex-1">
                 <div className="hidden lg:flex justify-center items-center">
                   {centerComponent}
                 </div>
               </div>
 
               <div className="flex items-center space-x-2.5">
+                <Link
+                  href="/faq"
+                  className="px-5 py-3 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition rounded-[5px]"
+                >
+                  FAQ
+                </Link>
                 {isLoadingUser ? (
                   <div className="h-8 w-[75px] bg-gray-200 animate-pulse rounded" />
                 ) : user ? (
@@ -174,12 +180,6 @@ const Layout = ({
                   </Menu>
                 ) : (
                   <>
-                    <Link
-                      href="/faq"
-                      className="hidden sm:block px-5 py-3 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition rounded-[5px]"
-                    >
-                      FAQ
-                    </Link>
                     <button
                       type="button"
                       onClick={() => openModal({ showSignIn: false })}
