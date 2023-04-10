@@ -20,7 +20,7 @@ function Plan({
   const router = useRouter();
   const isRecurring = price.type === "recurring";
   const buttonClassNames = classnames(
-    "order-2 sm:order-1 w-full sm:w-auto text-white bg-blue-500 hover:bg-blue-700 text-lg min-w-[150px] py-2.5 px-5 rounded-[10px]",
+    "order-2 sm:order-1 w-full sm:w-auto text-white bg-blue-500 hover:bg-blue-700 text-lg min-w-[150px] py-2.5 px-5 rounded-[10px] disabled:pointer-events-none",
     {
       "bg-custom-green": isActive,
       "mr-5": isRecurring,
@@ -111,7 +111,11 @@ function Plan({
           <p className="mb-3.5">{description}</p>
           <div className="flex flex-col sm:flex-row items-center">
             {isActive ? (
-              <button type="submit" className={buttonClassNames}>
+              <button
+                type="button"
+                className={buttonClassNames}
+                disabled={true}
+              >
                 Subscribed
               </button>
             ) : (
