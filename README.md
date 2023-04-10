@@ -8,7 +8,9 @@
     - [*] Fix login from wrong provider for same email and add error message on login error
     - [*] Show modal with link to billing page when user tries to upload more images than allowed
     - [ ] Check stripe webhook for payment on server
-    - [ ] Implement design for billing page
+    - [*] Implement design for billing page
     - [ ] Secure image search API
+    - [ ] Add image upload to search form (with the whole page as a dropzone)
+    - [*] Turn off welcome email sending
 
 [Example callback ULR](https://serp-mvp-progand.vercel.app/?callbackUrl=https%3A%2F%2Fserp-mvp-progand.vercel.app%2F%3FcallbackUrl%3Dhttps%253A%252F%252Fserp-mvp-progand.vercel.app%252F%253FcallbackUrl%253Dhttps%25253A%25252F%25252Fserp-mvp-progand.vercel.app%25252F%2526error%253DOAuthAccountNotLinked%2523%26error%3DOAuthAccountNotLinked%23&error=OAuthAccountNotLinked#)
