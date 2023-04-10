@@ -181,7 +181,7 @@ export default function BillingPage() {
       const response = await axios.get("/api/stripe/products");
       setPlans(response.data);
     } catch (error) {
-      toast.error("Error fetching plans");
+      toast.error(error?.response?.data?.message || "Error fetching plans");
     } finally {
       setLoading(false);
     }
