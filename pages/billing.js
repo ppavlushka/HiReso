@@ -214,71 +214,61 @@ export default function BillingPage() {
 
   return (
     <Layout mainClassName="">
-      {sessionStatus === "loading" ? (
+      {sessionStatus === "loading" || loading ? (
         <div className="h-full w-full flex align-center justify-center animate-pulse">
           <span>Loading...</span>
         </div>
       ) : (
         sessionStatus === "authenticated" && (
           <div className="max-w-2xl mx-auto">
-            <>
-              <h1 className={headerClassNames}>Your subscription</h1>
-              <div className="mb-12 bg-[#F2F8FF] text-black border border-[#CECECE] rounded-[20px] py-7 px-8">
-                {plans &&
-                  (plans?.subscription ? (
-                    <div>
-                      {/* display subscription end date */}
-                      <div className="mb-4">
-                        <SubscriptionStatus subscription={plans.subscription} />
-                      </div>
+            <h1 className={headerClassNames}>Your subscription</h1>
+            <div className="mb-12 bg-[#F2F8FF] text-black border border-[#CECECE] rounded-[20px] py-7 px-8">
+              {plans &&
+                (plans?.subscription ? (
+                  <div>
+                    {/* display subscription end date */}
+                    <div className="mb-4">
+                      <SubscriptionStatus subscription={plans.subscription} />
                     </div>
-                  ) : (
-                    <div>You are on free plan</div>
-                  ))}
-                {session?.user?.showBilling && (
-                  // eslint-disable-next-line @next/next/no-html-link-for-pages
-                  <form action="/api/stripe/portal" method="POST">
-                    <button
-                      type="submit"
-                      className="text-white bg-blue-500 hover:bg-blue-700 text-lg min-w-[150px] py-2.5 px-5 rounded-[10px]"
-                    >
-                      Manage Billing
-                    </button>
-                  </form>
-                )}
-              </div>
-            </>
+                  </div>
+                ) : (
+                  <div>You are on free plan</div>
+                ))}
+              {session?.user?.showBilling && (
+                // eslint-disable-next-line @next/next/no-html-link-for-pages
+                <form action="/api/stripe/portal" method="POST">
+                  <button
+                    type="submit"
+                    className="text-white bg-blue-500 hover:bg-blue-700 text-lg min-w-[150px] py-2.5 px-5 rounded-[10px]"
+                  >
+                    Manage Billing
+                  </button>
+                </form>
+              )}
+            </div>
 
-            {loading ? (
-              <div className="text-center text-xl">
-                Loading plans and prices...
-              </div>
-            ) : (
-              <>
-                <h1 className={headerClassNames}>Membership Subscription</h1>
-                <div className="mb-12">
-                  {plans?.prices
-                    ?.filter(({ type }) => type == "recurring")
-                    .map((price) => (
-                      <Plan
-                        key={price.id}
-                        price={price}
-                        buttonLabel="Subscribe"
-                        isActive={plans.subscription?.plan?.id === price.id}
-                        isPopular={true}
-                      />
-                    ))}
-                </div>
-                <h1 className={headerClassNames}>One Time Purchases</h1>
-                <div className="mb-12">
-                  {plans?.prices
-                    ?.filter(({ type }) => type !== "recurring")
-                    .map((price) => (
-                      <Plan key={price.id} price={price} buttonLabel="Buy" />
-                    ))}
-                </div>
-              </>
-            )}
+            <h1 className={headerClassNames}>Membership Subscription</h1>
+            <div className="mb-12">
+              {plans?.prices
+                ?.filter(({ type }) => type == "recurring")
+                .map((price) => (
+                  <Plan
+                    key={price.id}
+                    price={price}
+                    buttonLabel="Subscribe"
+                    isActive={plans.subscription?.plan?.id === price.id}
+                    isPopular={true}
+                  />
+                ))}
+            </div>
+            <h1 className={headerClassNames}>One Time Purchases</h1>
+            <div className="mb-12">
+              {plans?.prices
+                ?.filter(({ type }) => type !== "recurring")
+                .map((price) => (
+                  <Plan key={price.id} price={price} buttonLabel="Buy" />
+                ))}
+            </div>
           </div>
         )
       )}
