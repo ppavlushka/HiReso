@@ -79,24 +79,16 @@ export default function Home() {
 
   const isResultsPage = !!searchUrl && !!result;
 
-  const formComponent = (
-    <SearchForm
-      searchUrl={searchUrl}
-      isSearching={isSearching}
-      onSubmit={handleSubmit}
-      className="w-full md:max-w-xl relative -top-12"
-      error={error?.message}
-    />
-  );
-
   return (
     <Layout mainClassName="flex align-items-center" isHome={!isResultsPage}>
       {!isResultsPage ? (
-        <div
-          className={"w-full flex flex-col justify-center items-center py-5"}
-        >
-          {formComponent}
-        </div>
+        <SearchForm
+          searchUrl={searchUrl}
+          isSearching={isSearching}
+          onSubmit={handleSubmit}
+          className="w-full md:max-w-xl relative -top-12"
+          error={error?.message}
+        />
       ) : (
         <div className="relative flex-1 flex items-center px-3 py-6">
           <SearchResults
