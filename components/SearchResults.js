@@ -11,6 +11,30 @@ import UpscaleForm from "./UpscaleForm";
 /* global Promise */
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+function isBig(image) {
+  return image.width > 1500 && image.height > 1500;
+}
+
+const DownloadButton = ({
+  children,
+  image,
+  canDownload,
+  className = "",
+  onClick = () => {},
+}) => {
+  return (
+    <a
+      className={className}
+      onClick={onClick}
+      target="_blank"
+      rel="noopener noreferrer"
+      href={canDownload ? image.link : "!#"}
+    >
+      {children}
+    </a>
+  );
+};
+
 const SearchResults = ({ searchUrl, images, limit = 6 }) => {
   const { data: session, status } = useSession();
   const [tracked, setTracked] = useState(false);
@@ -102,6 +126,10 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
 
   const upscaledImageUrl = `/api/predictions/images/${prediction?.prediction?.id}`;
 
+  const downloadButtonClass =
+    "w-full px-7 py-4 bg-custom-darkgray hover:bg-gray-700 transition-colors text-white text-center rounded-[5px] inline-flex items-center justify-center";
+  const popoverButtonClass =
+    "px-5 py-2.5 w-full text-center text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none disabled:opacity-75 disabled:pointer-events-none rounded-[5px] transition-colors";
   return (
     <div className="w-full md:max-w-2xl lg:max-w-screen-lg mx-auto">
       <div className="text-lg font-medium mb-6">Preview</div>
@@ -120,6 +148,7 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
           isUpscaling={isUpscaling}
           onSubmit={handleUpscale}
           url={searchUrl}
+          popoverButtonClass={popoverButtonClass}
         />
 
         {prediction?.prediction?.status == "succeeded" && (
@@ -148,54 +177,65 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
       <div className="text-lg font-medium mb-4">Download Links:</div>
       <div>
         <Popover.Group className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3.5 text-lg">
-          {images.slice(0, limit).map((image, index) => (
-            <Popover key={index} className="relative inline-flex">
-              {({ open }) => (
-                <>
-                  <Popover.Button className="w-full px-7 py-4 bg-custom-darkgray hover:bg-gray-700 transition-colors text-white text-center rounded-[5px] inline-flex items-center justify-center">
-                    <span>
-                      {image.width}x{image.height}
-                    </span>
-                  </Popover.Button>
-                  <Transition
-                    show={open}
-                    as={React.Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Popover.Panel className="absolute md:left-1/2 bottom-full mb-3 z-10 w-full md:w-screen md:max-w-xs md:-translate-x-1/2 transform">
-                      <div className="overflow-hidden rounded-lg shadow-xl ring- ring-black ring-opacity-5">
-                        <div className="relative grid gap-6 bg-white p-4">
-                          <a
-                            className="px-5 py-2.5 text-center bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white w-full sm:w-auto disabled:opacity-75 disabled:pointer-events-none rounded-[5px] transition-colors"
-                            onClick={(evt) => handleDownload(evt)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href={canDownload ? image.link : "!#"}
-                          >
-                            <span>Download</span>
-                          </a>
-                          {/* Do not suggest upscale if both widht ang height of image is more than 1500 */}
-                          {(image.width < 1500 || image.height < 1500) && (
+          {images.slice(0, limit).map((image, index) =>
+            isBig(image) ? (
+              <DownloadButton
+                key={index}
+                onClick={(evt) => handleDownload(evt)}
+                image={image}
+                canDownload={canDownload}
+                className={downloadButtonClass}
+              >
+                <span>
+                  {image.width}x{image.height}
+                </span>
+              </DownloadButton>
+            ) : (
+              <Popover key={index} className="relative inline-flex">
+                {({ open }) => (
+                  <>
+                    <Popover.Button className={downloadButtonClass}>
+                      <span>
+                        {image.width}x{image.height}
+                      </span>
+                    </Popover.Button>
+                    <Transition
+                      show={open}
+                      as={React.Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Popover.Panel className="absolute md:left-1/2 bottom-full mb-3 z-10 w-full md:w-screen md:max-w-xs md:-translate-x-1/2 transform">
+                        <div className="overflow-hidden rounded-lg shadow-xl ring- ring-black ring-opacity-5">
+                          <div className="relative grid gap-6 bg-white p-4">
+                            <DownloadButton
+                              onClick={(evt) => handleDownload(evt)}
+                              image={image}
+                              canDownload={canDownload}
+                              className={popoverButtonClass}
+                            >
+                              <span>Download</span>
+                            </DownloadButton>
                             <UpscaleForm
                               isUpscaling={isUpscaling}
                               onSubmit={handleUpscale}
                               url={image.link}
                               isCompact={true}
+                              popoverButtonClass={popoverButtonClass}
                             />
-                          )}
+                          </div>
                         </div>
-                      </div>
-                    </Popover.Panel>
-                  </Transition>
-                </>
-              )}
-            </Popover>
-          ))}
+                      </Popover.Panel>
+                    </Transition>
+                  </>
+                )}
+              </Popover>
+            )
+          )}
         </Popover.Group>
       </div>
     </div>

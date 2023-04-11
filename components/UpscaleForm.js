@@ -9,6 +9,7 @@ export default function UpscaleForm({
   onSubmit = () => {},
   className = "",
   isCompact = false,
+  popoverButtonClass = "",
 }) {
   const [scale, setScale] = useState(2);
   const handleSubmit = (e) => {
@@ -23,7 +24,10 @@ export default function UpscaleForm({
       <Menu as="div" className="relative">
         <Menu.Button
           disabled={isUpscaling}
-          className="flex w-full  justify-center items-center px-5 py-2.5 bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white disabled:opacity-75 disabled:pointer-events-none rounded-[5px] transition-colors"
+          className={classNames(
+            "flex w-full  justify-center items-center px-5 py-2.5",
+            popoverButtonClass
+          )}
         >
           {isUpscaling ? (
             <span>Processing...</span>
@@ -96,7 +100,10 @@ export default function UpscaleForm({
       <button
         type="submit"
         disabled={isUpscaling}
-        className="mb-3 sm:mb-0 sm:ml-2.5 px-5 py-2.5 bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white w-full sm:w-auto disabled:opacity-75 disabled:pointer-events-none rounded-[5px] transition-colors"
+        className={classNames(
+          popoverButtonClass,
+          "mb-3 sm:mb-0 sm:ml-2.5 sm:w-auto"
+        )}
       >
         {isUpscaling ? "Processing..." : "Enlarge Image"}
       </button>
