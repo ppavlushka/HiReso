@@ -17,6 +17,7 @@ const SearchForm = ({
       : "https://www.shutterstock.com/shutterstock/photos/1922207963/display_1500/stock-photo-beautiful-attractive-stylish-woman-in-yellow-dress-and-straw-hat-holding-daisy-flower-romantic-mood-1922207963.jpg";
 
   const [search, setSearch] = useState(searchUrl || defaultSearch);
+  const [isUploading, setIsUploading] = useState(false);
   const handleInputChange = (event) => {
     setSearch(event.target.value);
   };
@@ -33,6 +34,7 @@ const SearchForm = ({
     formData.append("file", file);
 
     try {
+      setIsUploading(true);
       const response = await axios.post("/api/upload-image", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -40,6 +42,8 @@ const SearchForm = ({
       onSubmit(response.data.url);
     } catch (error) {
       toast.error(error?.message || "Something went wrong! Please try again.");
+    } finally {
+      setIsUploading(false);
     }
   };
   const onDrop = useCallback(fileUploadCallback, []);
@@ -73,17 +77,23 @@ const SearchForm = ({
       >
         {/* Drag an image here or u pload a file */}
         <div className="w-full text-center mb-10 text-custom-placeholder">
-          Drag an image here or{" "}
-          <a
-            href="#"
-            className="text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue"
-            onClick={(evt) => {
-              evt.preventDefault();
-              openFileDialog();
-            }}
-          >
-            upload a file
-          </a>
+          {isUploading ? (
+            <span>Uploading...</span>
+          ) : (
+            <>
+              Drag an image here or{" "}
+              <a
+                href="#"
+                className="text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue"
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  openFileDialog();
+                }}
+              >
+                upload a file
+              </a>
+            </>
+          )}
         </div>
         <input
           type="url"
@@ -91,13 +101,13 @@ const SearchForm = ({
           defaultValue={searchUrl}
           onChange={handleInputChange}
           placeholder="Enter image URL"
-          disabled={isSearching}
+          disabled={isSearching || isUploading}
           required
         />
         <button
           type="submit"
           className="mt-3 sm:mt-0 px-7 py-3 bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white w-full sm:w-auto disabled:opacity-75 disabled:pointer-events-none rounded-[5px] sm:rounded-l-none transition-colors"
-          disabled={isSearching}
+          disabled={isSearching || isUploading}
         >
           {isSearching ? "Wait..." : "Search"}
         </button>
