@@ -6,7 +6,7 @@ import prisma from "lib/prisma";
 import md5 from "md5";
 import { pushUserDataToMailchimp } from "lib/mailchimp";
 import { verifyRecaptchaV3Token } from "lib/recaptcha";
-import { sendVerificationRequest, sendWelcomeEmail } from "lib/emails";
+import { sendVerificationRequest } from "lib/emails";
 import getUserCountryWithUpdate from "lib/country";
 
 export const authOptions = {
@@ -83,11 +83,11 @@ export default async function auth(req, res) {
         const { email } = user;
         console.log("New user:", user);
         // send welcome email
-        try {
+        /* try {
           await sendWelcomeEmail(user);
         } catch (error) {
           console.log(`❌ Unable to send welcome email to user (${email})`);
-        }
+        } */
 
         // add to mailchimp list
 

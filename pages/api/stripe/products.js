@@ -7,6 +7,13 @@ export default async function handler(req, res) {
   try {
     // Get the user's stripeId from the database
     const session = await getServerSession(req, res, authOptions);
+    // return if no session
+    if (!session) {
+      return res.status(401).json({
+        success: false,
+        message: "You must be logged in.",
+      });
+    }
     const user =
       session &&
       (await prisma.user.findUnique({
@@ -30,6 +37,6 @@ export default async function handler(req, res) {
       subscription,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message, success: false });
   }
 }
