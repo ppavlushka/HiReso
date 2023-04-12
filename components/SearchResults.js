@@ -12,7 +12,7 @@ import UpscaleForm from "./UpscaleForm";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function isBig(image) {
-  return image.width > 1500 && image.height > 1500;
+  return image.width * image.height > 1500000;
 }
 
 const DownloadButton = ({
