@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast";
 import { Formik, Form } from "formik";
 import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
+import { useReCaptcha } from "next-recaptcha-v3";
 import Input from "./Input";
 
 const SignInSchema = Yup.object().shape({
@@ -48,16 +49,23 @@ const Confirm = ({
       >
         <div className="flex items-center justify h-full  p-8">
           <div className="overflow-hidden transition-all transform">
-            <div className="text-2xl font-bold mb-3">
-              Confirm your email address
-            </div>
+            <div className="text-2xl font-bold mb-3">Check Your Email</div>
             <p className="text-muted mb-6">
-              We sent an email to <strong>{email ?? ""}</strong>
+              We&apos;ve sent a magic link to your inbox {email || ""}
             </p>
 
             <p className="mb-6">
-              Please confirm your email address by clicking the link we just
-              sent to your inbox
+              If you don&apos;t see it in your inbox, please check your spam or
+              junk folder. If you entered the wrong email address, you can click
+              the &quot;Change Email&quot; button below to update it. If you
+              still don&apos;t receive the email,{" "}
+              <a
+                href="mailto:info@hireso.io"
+                className="underline underline-offset-4 hover:text-custom-hoverblue"
+              >
+                contact us
+              </a>
+              .
             </p>
             <p className="mb-6">
               Didn’t get a code?
@@ -91,17 +99,22 @@ const AuthModal = ({
 }) => {
   const [disabled, setDisabled] = useState(false);
   const [showConfirm, setConfirm] = useState(false);
+  // Import 'executeRecaptcha' using 'useReCaptcha' hook
+  const { executeRecaptcha } = useReCaptcha();
 
   const signInWithEmail = async ({ email }) => {
     let toastId;
     try {
       toastId = toast.loading("Loading...");
       setDisabled(true);
+      // Generate ReCaptcha token
+      const recaptchaToken = await executeRecaptcha("login");
       // Perform sign in
       const { error } = await signIn("email", {
         redirect: false,
         callbackUrl: window.location.href,
         email,
+        recaptchaToken,
       });
       // Something went wrong
       if (error) {
@@ -141,7 +154,7 @@ const AuthModal = ({
         setShowSignIn(false);
       }, 200);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show]);
 
   // Remove pending toasts if any
@@ -173,14 +186,16 @@ const AuthModal = ({
             leaveTo="opacity-0"
           >
             <div className="fixed inset-0 flex items-end justify-center">
-              {!showSignIn && !showConfirm && (
+              {!showConfirm && (
                 <div className="text-white dark:text-black mb-7">
-                  <span className="mr-1.5">By signing up you agree to our</span>
+                  <span className="mr-1.5">
+                    By clicking &quot;Send Magic Link&quot; you agree to our
+                  </span>
                   <Link
                     href="/terms-and-conditions"
                     className="font-bold underline hover:text-custom-hoverblue transition-colors"
                   >
-                    Terms and Conditions & Privacy Policy
+                    Terms of Service and Privacy Policy
                   </Link>
                 </div>
               )}
@@ -219,13 +234,11 @@ const AuthModal = ({
                     as="div"
                     className="font-bold text-xl sm:text-2xl mb-2"
                   >
-                    {showSignIn ? "Login" : "Create an Account"}
+                    Get Started in Seconds
                   </Dialog.Title>
 
                   <Dialog.Description className="text-muted text-base mb-7">
-                    {showSignIn
-                      ? "Welcome Back! Please enter your details."
-                      : "Enter the fields below to get started"}
+                    Sign up or log in with just one click!
                   </Dialog.Description>
 
                   <div className="">
@@ -246,7 +259,7 @@ const AuthModal = ({
 
                     {/* Sign with email */}
                     <Formik
-                      initialValues={{ email: "" }}
+                      initialValues={{ email: "", name: "" }}
                       validationSchema={SignInSchema}
                       validateOnBlur={false}
                       onSubmit={signInWithEmail}
@@ -265,49 +278,10 @@ const AuthModal = ({
                           <button
                             type="submit"
                             disabled={disabled || !isValid}
-                            className="mb-7 px-5 py-4 w-full text-lg text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none rounded-[10px]"
+                            className="px-5 py-4 w-full text-lg text-white bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none rounded-[10px]"
                           >
-                            {isSubmitting
-                              ? "Loading..."
-                              : showSignIn
-                              ? "Login"
-                              : "Create Account"}
+                            {isSubmitting ? "Sending..." : "Send Magic Link"}
                           </button>
-
-                          <p className="text-center ">
-                            {showSignIn ? (
-                              <>
-                                Don&apos;t have an account?{" "}
-                                <button
-                                  type="button"
-                                  disabled={disabled}
-                                  onClick={() => {
-                                    setShowSignIn(false);
-                                    resetForm();
-                                  }}
-                                  className="font-bold text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none"
-                                >
-                                  Sign up
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                Already have an account?{" "}
-                                <button
-                                  type="button"
-                                  disabled={disabled}
-                                  onClick={() => {
-                                    setShowSignIn(true);
-                                    resetForm();
-                                  }}
-                                  className="font-bold text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue disabled:opacity-75 disabled:pointer-events-none"
-                                >
-                                  Log in
-                                </button>
-                                .
-                              </>
-                            )}
-                          </p>
 
                           <Confirm
                             show={showConfirm}

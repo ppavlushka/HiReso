@@ -1,11 +1,12 @@
 import React, { Fragment, useState } from "react";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
 //import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import PropTypes from "prop-types";
 import { useSession, signOut } from "next-auth/react";
 import AuthModal from "./AuthModal";
+import LimitModal from "./LimitModal";
 import { Menu, Transition } from "@headlessui/react";
 import { UserIcon, ChevronRightIcon } from "@heroicons/react/outline";
 //import { ChevronRightIcon } from "@heroicons/react/solid";
@@ -15,8 +16,9 @@ import Logo from "../components/Logo";
 const menuItems = [
   {
     label: "My profile",
-    href: "/",
+    href: "/billing",
   },
+
   {
     label: "Logout",
     onClick: signOut,
@@ -25,6 +27,18 @@ const menuItems = [
 
 export const LayoutContext = React.createContext(null);
 
+const Brand = ({ isHome }) => {
+  return isHome ? (
+    <div className="flex items-center space-x-1 relative bottom-0.5">
+      <Logo className="shrink-0" />
+    </div>
+  ) : (
+    <Link href="/" className="flex items-center space-x-1 relative bottom-0.5">
+      <Logo className="shrink-0" />
+    </Link>
+  );
+};
+
 const Layout = ({
   children = null,
   mainClassName = "",
@@ -32,20 +46,25 @@ const Layout = ({
   leftComponent,
   centerComponent,
 }) => {
-  const router = useRouter();
+  //const router = useRouter();
 
   const { data: session, status } = useSession();
   const user = session?.user;
   const isLoadingUser = status === "loading";
 
   const [showModal, setShowModal] = useState(false);
-  const [showSignIn, setShowSignIn] = useState(false);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [showSignIn] = useState(true);
 
-  const openModal = (params) => {
-    setShowSignIn(params?.showSignIn);
+  const openModal = () => {
     setShowModal(true);
   };
   const closeModal = () => setShowModal(false);
+
+  const openLimitModal = () => {
+    setShowLimitModal(true);
+  };
+  const closeLimitModal = () => setShowLimitModal(false);
 
   return (
     <>
@@ -54,27 +73,23 @@ const Layout = ({
       <div className="min-h-screen flex flex-col">
         <header className="w-full">
           <div className="h-full mx-auto">
-            <div className="h-full px-10 py-6 flex justify-between items-center space-x-4">
-              {isHome ? (
-                <div></div>
-              ) : (
-                <>
-                  <Link
-                    href="/"
-                    className="flex items-center space-x-1 relative bottom-0.5"
-                  >
-                    <Logo className="shrink-0" />
-                  </Link>
-                  {leftComponent}
-                </>
-              )}
-              <div className="flex-1 ">
+            <div className="h-full px-10 py-6 flex flex-col sm:flex-row flex-wrap sm:justify-between items-center sm:items-start space-x-4">
+              <Brand isHome={isHome} />
+              {leftComponent}
+
+              <div className="flex-1">
                 <div className="hidden lg:flex justify-center items-center">
                   {centerComponent}
                 </div>
               </div>
 
               <div className="flex items-center space-x-2.5">
+                <Link
+                  href="/faq"
+                  className="px-5 py-3 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition rounded-[5px]"
+                >
+                  FAQ
+                </Link>
                 {isLoadingUser ? (
                   <div className="h-8 w-[75px] bg-gray-200 animate-pulse rounded" />
                 ) : user ? (
@@ -106,7 +121,7 @@ const Layout = ({
                       leaveFrom="opacity-100 scale-100"
                       leaveTo="opacity-0 scale-95"
                     >
-                      <Menu.Items className="px-5 absolute right-0 w-48 mt-4 border-4 border-custom-inputbg dark:border-gray-600 bg-white dark:bg-black origin-top-right rounded-[3px] focus:outline-none">
+                      <Menu.Items className="absolute right-0 w-48 mt-4 border-4 border-custom-inputbg dark:border-gray-600 bg-white dark:bg-black origin-top-right rounded-[3px] focus:outline-none">
                         <div
                           className="w-0 h-0 
                             absolute z-10 -top-2.5 right-2.5
@@ -140,7 +155,7 @@ const Layout = ({
                             <ChevronRightIcon className="w-5 h-5 shrink-0 text-black dark:text-white group-hover:text-current" />
                           );
                           const linkClasses =
-                            "w-full last:border-t dark:border-gray-600 flex items-center justify-between space-x-2 py-4 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition";
+                            "w-full last:border-t dark:border-gray-600 flex items-center justify-between space-x-2 px-5 py-4 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition";
                           return (
                             <Menu.Item key={label}>
                               {href ? (
@@ -166,21 +181,11 @@ const Layout = ({
                 ) : (
                   <>
                     <button
-                      onClick={() => {
-                        session?.user
-                          ? router.push("/create")
-                          : openModal({ showSignIn: true });
-                      }}
-                      className="hidden sm:block px-5 py-3 hover:bg-custom-hovergray dark:hover:bg-gray-700 transition rounded-[5px]"
-                    >
-                      Login
-                    </button>
-                    <button
                       type="button"
                       onClick={() => openModal({ showSignIn: false })}
                       className="ml-2.5 px-5 py-3 rounded-[5px] bg-custom-blue hover:bg-custom-hoverblue focus:bg-custom-hoverblue focus:outline-none  text-white transition-colors"
                     >
-                      Sign Up
+                      Get Started
                     </button>
                   </>
                 )}
@@ -195,8 +200,8 @@ const Layout = ({
             mainClassName
           }
         >
-          <LayoutContext.Provider value={{ openModal }}>
-            {typeof children === "function" ? children(openModal) : children}
+          <LayoutContext.Provider value={{ openModal, openLimitModal }}>
+            {children}
           </LayoutContext.Provider>
         </main>
 
@@ -204,8 +209,8 @@ const Layout = ({
           show={showModal}
           onClose={closeModal}
           showSignIn={showSignIn}
-          setShowSignIn={setShowSignIn}
         />
+        <LimitModal show={showLimitModal} onClose={closeLimitModal} />
       </div>
     </>
   );

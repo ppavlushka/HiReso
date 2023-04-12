@@ -7,20 +7,37 @@ import { toast } from "react-hot-toast";
 import { search } from "../lib/search";
 import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
-import Logo from "../components/Logo";
+import { signinErrors } from "../lib/signinErrors";
 
 export default function Home() {
   const router = useRouter();
-  const [searchUrl, setSearchUrl] = useState("");
+  const [searchUrl, setSearchUrl] = useState(router.query.q || "");
   const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+
+  const { error: signinError } = router.query;
+  // display messsage on signin error
+  useEffect(() => {
+    if (signinError) {
+      const errorKey = signinError.toLowerCase();
+      let message = signinErrors[errorKey];
+      const prefix = "Unable to sign in!";
+      if (errorKey !== "default") {
+        message = `${prefix}\n${message}`;
+      }
+      toast.error(message);
+    }
+  }, [signinError]);
 
   const fetchData = async (searchUrl) => {
     toast.dismiss();
     try {
+      setError(null);
       setIsSearching(true);
       const result = await search(searchUrl);
-      setResult(result);
+      setResult({ success: true, ...result, searchUrl });
+      router.push(`/?q=${encodeURIComponent(searchUrl)}`);
     } catch (error) {
       const message =
         (error &&
@@ -29,7 +46,7 @@ export default function Home() {
           error.response.data.message) ||
         "Something went wrong!";
       toast.error(message);
-      //setError(error);
+      setError({ success: false, message });
     }
     setIsSearching(false);
   };
@@ -38,9 +55,12 @@ export default function Home() {
     if (!searchUrl) {
       setIsSearching(false);
       setResult(null);
+      setError(null);
+      toast.dismiss();
       return;
     }
     fetchData(searchUrl);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchUrl]);
 
   useEffect(() => {
@@ -49,39 +69,32 @@ export default function Home() {
   }, [router]);
 
   const handleSubmit = (url) => {
+    if (searchUrl === url) {
+      fetchData(url);
+    }
     setSearchUrl(url);
-    router.push(`/?q=${encodeURIComponent(url)}`);
   };
 
   const images = result && Array.isArray(result.images) ? result.images : [];
 
   const isResultsPage = !!searchUrl && !!result;
 
-  const formComponent = (
-    <SearchForm
-      searchUrl={searchUrl}
-      isSearching={isSearching}
-      onSubmit={handleSubmit}
-      className="w-full md:max-w-xl"
-    />
-  );
-
   return (
-    <Layout
-      mainClassName="flex align-items-center"
-      isHome={!isResultsPage}
-      centerComponent={isResultsPage ? formComponent : null}
-    >
+    <Layout mainClassName="flex align-items-center" isHome={!isResultsPage}>
       {!isResultsPage ? (
-        <div
-          className={"w-full flex flex-col justify-center items-center py-5 "}
-        >
-          <Logo className="mb-16" />
-          {formComponent}
-        </div>
+        <SearchForm
+          searchUrl={searchUrl}
+          isSearching={isSearching}
+          onSubmit={handleSubmit}
+          className="w-full md:max-w-xl relative -top-12"
+          error={error?.message}
+        />
       ) : (
         <div className="relative flex-1 flex items-center px-3 py-6">
-          <SearchResults images={images} searchUrl={searchUrl} />
+          <SearchResults
+            images={images}
+            searchUrl={result?.searchUrl}
+          ></SearchResults>
         </div>
       )}
     </Layout>
