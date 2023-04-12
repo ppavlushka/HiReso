@@ -21,7 +21,15 @@ const DownloadButton = ({
   canDownload,
   className = "",
   onClick = () => {},
+  loading = false,
 }) => {
+  const inner = loading ? "Loading..." : children;
+  if (!image.link)
+    return (
+      <button className={className} onClick={onClick}>
+        {inner}
+      </button>
+    );
   return (
     <a
       className={className}
@@ -30,14 +38,15 @@ const DownloadButton = ({
       rel="noopener noreferrer"
       href={canDownload ? image.link : "!#"}
     >
-      {children}
+      {inner}
     </a>
   );
 };
 
 const SearchResults = ({ searchUrl, images, limit = 6 }) => {
   const { data: session, status } = useSession();
-  const [tracked, setTracked] = useState(false);
+  const [hashes, setHashes] = useState(null);
+  const [activeImage, setActiveImage] = useState(null);
   const [prediction, setPrediction] = useState(null);
   const [isUpscaling, setIsUpscaling] = useState(false);
   const user = session?.user;
@@ -47,11 +56,15 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
   const { openModal, openLimitModal } = useContext(LayoutContext);
 
   const trackIfNeeded = async function () {
-    if (tracked) return;
+    if (hashes) {
+      setActiveImage(null);
+      return;
+    }
     try {
-      await track();
-      setTracked(true);
+      const response = await track(images);
+      setHashes(response?.hashes || null);
     } catch (error) {
+      setActiveImage(null);
       const message =
         (error &&
           error.response &&
@@ -62,25 +75,40 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
     }
   };
 
+  useEffect(() => {
+    if (hashes && activeImage) {
+      window.open(hashes[activeImage.hash], "_blank");
+      setActiveImage(null);
+    }
+  }, [hashes, activeImage]);
+
   const showLimitMessage = () => {
     if (!user) return openModal();
     openLimitModal();
   };
 
-  const handleDownload = async (evt) => {
+  const handleDownload = async (evt, image) => {
     toast.dismiss();
 
     if (!canDownload) {
       evt.preventDefault();
       return showLimitMessage();
     }
+    if (!hashes) {
+      setActiveImage(image);
+    }
     await trackIfNeeded();
   };
 
-  // reset tracked state when searchUrl changes
+  // reset hashes state when searchUrl changes
   useEffect(() => {
-    setTracked(false);
+    setHashes(null);
   }, [searchUrl]);
+
+  const decodedImages = images.map((image) => ({
+    ...image,
+    link: hashes && hashes[image.hash],
+  }));
 
   const handleUpscale = async ({ url, scale }) => {
     toast.dismiss();
@@ -177,14 +205,15 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
       <div className="text-lg font-medium mb-4">Download Links:</div>
       <div>
         <Popover.Group className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3.5 text-lg">
-          {images.slice(0, limit).map((image, index) =>
+          {decodedImages.slice(0, limit).map((image, index) =>
             isBig(image) ? (
               <DownloadButton
                 key={index}
-                onClick={(evt) => handleDownload(evt)}
+                onClick={(evt) => handleDownload(evt, image)}
                 image={image}
                 canDownload={canDownload}
                 className={downloadButtonClass}
+                loading={activeImage?.hash === image.hash}
               >
                 <span>
                   {image.width}x{image.height}
@@ -213,10 +242,11 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
                         <div className="overflow-hidden rounded-lg shadow-xl ring- ring-black ring-opacity-5">
                           <div className="relative grid gap-6 bg-white p-4">
                             <DownloadButton
-                              onClick={(evt) => handleDownload(evt)}
+                              onClick={(evt) => handleDownload(evt, image)}
                               image={image}
                               canDownload={canDownload}
                               className={popoverButtonClass}
+                              loading={activeImage?.hash === image.hash}
                             >
                               <span>Download</span>
                             </DownloadButton>

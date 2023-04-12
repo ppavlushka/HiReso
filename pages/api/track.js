@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import prisma from "lib/prisma";
 import _ from "lodash";
 import { pushUserDataToMailchimp } from "lib/mailchimp";
+import { decrypt, initEncryption } from "../../lib/encryption";
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
@@ -11,7 +12,25 @@ export default async function handler(req, res) {
     res.status(401).json({ success: false, message: "You must be logged in." });
     return;
   }
+  // only POST requests
+  if (req.method !== "POST") {
+    res.status(405).json({ success: false, message: "Method not allowed" });
+    return;
+  }
+  const { images } = req.body;
+  if (!images) {
+    res
+      .status(400)
+      .json({ success: false, message: "Missing `images` parameter" });
+  }
   try {
+    // decrypt images links
+    await initEncryption();
+    const hashes = {};
+    for (let i = 0; i < images.length; i++) {
+      hashes[images[i].hash] = await decrypt(images[i].hash);
+    }
+    // update user quota
     console.log(session);
     const email = session.user?.email;
     console.log(email);
@@ -30,15 +49,16 @@ export default async function handler(req, res) {
     await pushUserDataToMailchimp(user);
 
     return res.json({
-      success: false,
-      message: "Success",
+      success: true,
       data: _.pick(user, ["usedQuota", "quota"]),
+      images,
+      hashes,
     });
   } catch (error) {
-    console.log(error);
-    return res.json({
+    console.error(error);
+    return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Something went wrong",
     });
   }
 }

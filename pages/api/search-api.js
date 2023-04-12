@@ -32,7 +32,7 @@ export default async function handler(req, res) {
           url,
           api_key: process.env.SERPAPI_API_KEY,
         });
-    res.status(200).json(parseResult(result));
+    res.status(200).json(await parseResult(result));
   } catch (error) {
     res
       .status(403)
