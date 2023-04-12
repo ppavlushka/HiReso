@@ -75,26 +75,6 @@ const SearchForm = ({
           className
         )}
       >
-        {/* Drag an image here or u pload a file */}
-        <div className="w-full text-center mb-10 text-custom-placeholder">
-          {isUploading ? (
-            <span>Uploading...</span>
-          ) : (
-            <>
-              Drag an image here or{" "}
-              <a
-                href="#"
-                className="text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue"
-                onClick={(evt) => {
-                  evt.preventDefault();
-                  openFileDialog();
-                }}
-              >
-                upload a file
-              </a>
-            </>
-          )}
-        </div>
         <input
           type="url"
           className="px-5 py-3 border border-custom-border text-custom-inputtext placeholder:text-custom-placeholder bg-custom-inputbg  outline-none w-full sm:flex-1 sm:w-auto disabled:opacity-75 disabled:pointer-events-none rounded-[5px] sm:rounded-r-none"
@@ -114,6 +94,26 @@ const SearchForm = ({
         {error && (
           <div className="text-danger mt-8 w-full text-center">{error}</div>
         )}
+        {/* Drag an image here or u pload a file */}
+        <div className="w-full text-center mt-10 text-custom-placeholder">
+          {isUploading ? (
+            <span>Uploading...</span>
+          ) : (
+            <>
+              Drag an image here or{" "}
+              <a
+                href="#"
+                className="text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue"
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  openFileDialog();
+                }}
+              >
+                upload a file
+              </a>
+            </>
+          )}
+        </div>
       </form>
       {isDragActive && (
         <>
