@@ -22,7 +22,7 @@ export const StripeWebhooks = {
 
 export default async function checkoutsWebhooksHandler(req, res) {
   const signature = req.headers[STRIPE_SIGNATURE_HEADER];
-  const rawBody = await getRawBody(req);
+  const rawBody = req.rawBody || (await getRawBody(req));
 
   const event = stripe.webhooks.constructEvent(
     rawBody,
