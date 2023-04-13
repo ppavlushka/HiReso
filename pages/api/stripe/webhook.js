@@ -24,11 +24,22 @@ export default async function checkoutsWebhooksHandler(req, res) {
   const signature = req.headers[STRIPE_SIGNATURE_HEADER];
   const rawBody = req.rawBody || (await getRawBody(req));
 
-  const event = stripe.webhooks.constructEvent(
-    rawBody,
-    signature,
-    process.env.STRIPE_WEBHOOKS_SECRET
-  );
+  // log signature, rawBody and webhook secret
+  console.log("signature", signature);
+  console.log("rawBody", rawBody);
+  console.log("webhook secret", process.env.STRIPE_WEBHOOKS_SECRET);
+
+  try {
+    const event = stripe.webhooks.constructEvent(
+      rawBody,
+      signature,
+      process.env.STRIPE_WEBHOOKS_SECRET
+    );
+    console.log("stripe.webhooks event", event);
+  } catch (error) {
+    console.log("stripe.webhooks error", error);
+    return res.status(500).json({ error: error.message });
+  }
 
   // NB: if stripe.webhooks.constructEvent fails, it would throw an error
 
