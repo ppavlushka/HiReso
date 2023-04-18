@@ -1,5 +1,6 @@
 import getRawBody from "raw-body";
 import prisma from "lib/prisma";
+import { pushUserDataToMailchimp } from "lib/mailchimp";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const STRIPE_SIGNATURE_HEADER = "stripe-signature";
@@ -46,6 +47,7 @@ export default async function checkoutsWebhooksHandler(req, res) {
   // here we handle each event based on {event.type}
 
   try {
+    let mailchimpUserData;
     switch (event.type) {
       case StripeWebhooks.AsyncPaymentSuccess:
       case StripeWebhooks.Completed: {
@@ -84,6 +86,9 @@ export default async function checkoutsWebhooksHandler(req, res) {
             },
           });
         }
+        mailchimpUserData = await prisma.user.findUnique({
+          where: { id: userId },
+        });
 
         break;
       }
@@ -94,6 +99,9 @@ export default async function checkoutsWebhooksHandler(req, res) {
         await prisma.user.updateMany({
           where: { subscriptionId: subscription.id },
           data: { subscriptionId: null },
+        });
+        mailchimpUserData = await prisma.user.findFirst({
+          where: { subscriptionId: subscription.id },
         });
         // log subscription deletion
         console.log("Subscription deleted", subscription.id);
@@ -111,6 +119,15 @@ export default async function checkoutsWebhooksHandler(req, res) {
           // log subscription update
           console.log("Stripe subscription updated", subscription.id);
         }
+        mailchimpUserData = await prisma.user.findFirst({
+          where: { customerId: subscription.customer },
+        });
+        // remove subscriptionId if subscription is cancelled
+        // https://stripe.com/docs/billing/subscriptions/cancel#cancel-at-end-of-cycle
+        mailchimpUserData.subscriptionId =
+          subscription.status === "active" && !subscription.cancel_at_period_end
+            ? subscription.id
+            : null;
         break;
       }
 
@@ -120,6 +137,9 @@ export default async function checkoutsWebhooksHandler(req, res) {
         console.log("Stripe payment failed", session.id);
         break;
       }
+    }
+    if (mailchimpUserData) {
+      await pushUserDataToMailchimp(mailchimpUserData);
     }
 
     return res.status(200).json({ success: true });
