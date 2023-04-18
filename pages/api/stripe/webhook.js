@@ -66,7 +66,7 @@ export default async function checkoutsWebhooksHandler(req, res) {
               customerId,
               subscriptionId: subscription.id,
               quota: {
-                increment: 100,
+                increment: Number(session.metadata?.quota) || 30,
               },
             },
           });
