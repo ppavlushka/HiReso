@@ -41,24 +41,39 @@ const SearchForm = ({
 
       onSubmit(response.data.url);
     } catch (error) {
-      toast.error(error?.message || "Something went wrong! Please try again.");
+      toast.error(
+        error?.response?.data?.message ||
+          "Something went wrong! Please try to upload again."
+      );
     } finally {
       setIsUploading(false);
     }
   };
-  const onDrop = useCallback(fileUploadCallback, []);
+  const fileRejectedCallback = (fileRejections) => {
+    try {
+      const { errors } = fileRejections[0];
+      const { message } = errors[0];
+      toast.error(message);
+    } catch (e) {
+      toast.error("File has been rejected for unknown reason.");
+    }
+  };
+
+  const onDropAccepted = useCallback(fileUploadCallback, []);
+  const onDropRejected = useCallback(fileRejectedCallback, []);
   const {
     getRootProps,
     getInputProps,
     isDragActive,
     open: openFileDialog,
   } = useDropzone({
-    onDrop,
+    onDropAccepted,
+    onDropRejected,
     multiple: false,
     accept: { "image/*": [] },
     noClick: true,
     noKeyboard: true,
-    maxSize: 1024 * 1024 * 2,
+    maxSize: 1024 * 1024 * 4,
   });
 
   return (
@@ -110,7 +125,8 @@ const SearchForm = ({
                 }}
               >
                 upload a file
-              </a>
+              </a>{" "}
+              (max 4MB)
             </>
           )}
         </div>

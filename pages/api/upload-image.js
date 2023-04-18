@@ -26,9 +26,23 @@ export default function uploadImage(req, res) {
       res.status(400).json({ message: err.message, success: false });
       return;
     }
+    if (!req.file) {
+      res
+        .status(400)
+        .json({ message: "Browser did not send any file", success: false });
+      return;
+    }
 
     try {
       const file = req.file;
+      // reject files bigger than 4MB
+      if (file.size > 4 * 1024 * 1024) {
+        res.status(400).json({
+          message: "File size is too big. Max file size is 4MB",
+          success: false,
+        });
+        return;
+      }
 
       const params = {
         Bucket: process.env.SPACES_NAME,
@@ -46,7 +60,7 @@ export default function uploadImage(req, res) {
       });
     } catch (err) {
       res.status(400).json({ message: err.message, success: false });
-      console.log(err);
+      console.error("Error uploading file: ", err.message, err.stack, "");
     }
   });
 }
