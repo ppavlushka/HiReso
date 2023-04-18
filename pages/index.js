@@ -20,8 +20,8 @@ export default function Home() {
   // display messsage on signin error
   useEffect(() => {
     if (signinError) {
-      const errorKey = signinError.toLowerCase();
-      let message = signinErrors[errorKey];
+      const errorKey = String(signinError).toLowerCase();
+      let message = signinErrors[errorKey] || `Unknown error: ${errorKey}`;
       const prefix = "Unable to sign in!";
       if (errorKey !== "default") {
         message = `${prefix}\n${message}`;
