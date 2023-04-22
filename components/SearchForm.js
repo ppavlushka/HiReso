@@ -79,7 +79,7 @@ const SearchForm = ({
   return (
     <div
       className={
-        "w-full sm:flex sm:flex-col sm:justify-around sm:items-center sm:py-5"
+        "w-full sm:flex sm:flex-col sm:justify-between 2xl:justify-around sm:items-center sm:py-5"
       }
       {...getRootProps()}
     >
