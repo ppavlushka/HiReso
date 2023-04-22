@@ -101,7 +101,7 @@ const SearchForm = ({
       <form
         onSubmit={handleSearch}
         className={classNames(
-          "flex flex-wrap justify-center sm:items-stretch leading-tight my-10 sm:my-4",
+          "flex flex-wrap justify-center sm:items-stretch leading-tight my-10",
           className
         )}
       >
@@ -125,7 +125,7 @@ const SearchForm = ({
           <div className="text-danger mt-8 w-full text-center">{error}</div>
         )}
         {/* Drag an image here or u pload a file */}
-        <div className="w-full text-center mt-10 text-custom-placeholder">
+        <div className="w-full text-center mt-4 text-custom-placeholder">
           {isUploading ? (
             <span>Uploading...</span>
           ) : (
