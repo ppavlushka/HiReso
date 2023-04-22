@@ -78,15 +78,30 @@ const SearchForm = ({
 
   return (
     <div
-      className={"w-full flex flex-col justify-center items-center py-5"}
+      className={
+        "w-full sm:flex sm:flex-col sm:justify-around sm:items-center sm:py-5"
+      }
       {...getRootProps()}
     >
       <input {...getInputProps()} />
+      <div className="leading-tight text-center text-black">
+        <p className="text-[28px] sm:text-[32px] md:text-[46px] font-bold mb-4">
+          👋
+        </p>
+        <p className="text-[24px] sm:text-[28px] md:text-[42px] mb-4">
+          From Blurry & Watermarked
+          <br />
+          <strong>to Brilliant & Hi-Res.</strong>
+        </p>
+        <p className="text-[14px] sm:text-[16px] md:text-[18px] font-medium">
+          Find, Enhance, and Enlarge Images with hiReso&apos;s Expertise
+        </p>
+      </div>
 
       <form
         onSubmit={handleSearch}
         className={classNames(
-          "flex flex-wrap justify-center sm:items-stretch leading-tight",
+          "flex flex-wrap justify-center sm:items-stretch leading-tight my-10 sm:my-4",
           className
         )}
       >
@@ -131,6 +146,16 @@ const SearchForm = ({
           )}
         </div>
       </form>
+      <div className={className}>
+        <iframe
+          className="w-full sm:w-109 aspect-video"
+          src="https://www.youtube.com/embed/c97ImOcdAcg?controls=0"
+          title="Hireso Demo Video"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
+      </div>
       {isDragActive && (
         <>
           <div className="fixed inset-0 bg-dialog-overlay backdrop-blur-sm flex items-center justify-center">

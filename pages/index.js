@@ -86,7 +86,7 @@ export default function Home() {
           searchUrl={searchUrl}
           isSearching={isSearching}
           onSubmit={handleSubmit}
-          className="w-full md:max-w-xl relative -top-12"
+          className="w-full md:max-w-xl"
           error={error?.message}
         />
       ) : (
