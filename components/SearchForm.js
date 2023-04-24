@@ -151,9 +151,9 @@ const SearchForm = ({
           className="w-full sm:w-109 aspect-video"
           src="https://www.youtube.com/embed/c97ImOcdAcg?controls=0"
           title="Hireso Demo Video"
-          frameborder="0"
+          frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen
+          allowFullScreen={true}
         ></iframe>
       </div>
       {isDragActive && (

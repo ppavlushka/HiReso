@@ -83,7 +83,7 @@ function Terms() {
         <p className="mb-4">
           Users can contact HiReso&apos;s customer support team by emailing{" "}
           <a
-            class="text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue"
+            className="text-custom-blue hover:text-custom-hoverblue focus:text-custom-hoverblue"
             href="mailto:info@hireso.io"
           >
             info@hireso.io
