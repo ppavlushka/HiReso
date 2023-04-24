@@ -196,7 +196,7 @@ const Layout = ({
 
         <main
           className={
-            "flex-grow w-full md:max-w-2xl lg:max-w-screen-lg mx-auto px-3 py-6 " +
+            "flex-grow w-full md:max-w-2xl lg:max-w-screen-lg mx-auto px-3 py-3 xl:py-6 " +
             mainClassName
           }
         >
