@@ -26,6 +26,7 @@ async function createStripeCheckout({ returnUrl, user, price, product }) {
     cancel_url: cancelUrl,
     client_reference_id: clientReferenceId,
     metadata: product.metadata,
+    allow_promotion_codes: true,
   });
 }
 
