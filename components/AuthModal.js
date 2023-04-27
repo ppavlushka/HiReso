@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { signIn } from "next-auth/react";
 import * as Yup from "yup";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/router";
 import { Formik, Form } from "formik";
 import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
@@ -96,11 +97,21 @@ const AuthModal = ({
   onClose = () => null,
   showSignIn = false,
   setShowSignIn = () => null,
+  invidationCode,
 }) => {
   const [disabled, setDisabled] = useState(false);
   const [showConfirm, setConfirm] = useState(false);
   // Import 'executeRecaptcha' using 'useReCaptcha' hook
   const { executeRecaptcha } = useReCaptcha();
+
+  const router = useRouter();
+
+  const getCallbackUrl = () => {
+    if (router.pathname.includes("/invitations/")) {
+      return window.location.origin;
+    }
+    return window.location.href;
+  };
 
   const signInWithEmail = async ({ email }) => {
     let toastId;
@@ -112,9 +123,10 @@ const AuthModal = ({
       // Perform sign in
       const { error } = await signIn("email", {
         redirect: false,
-        callbackUrl: window.location.href,
+        callbackUrl: getCallbackUrl(),
         email,
         recaptchaToken,
+        invidationCode,
       });
       // Something went wrong
       if (error) {
@@ -134,7 +146,7 @@ const AuthModal = ({
     setDisabled(true);
     // Perform sign in
     signIn("google", {
-      callbackUrl: window.location.href,
+      callbackUrl: getCallbackUrl(),
     });
   };
 
@@ -243,19 +255,37 @@ const AuthModal = ({
 
                   <div className="">
                     {/* Sign with Google */}
-                    <button
-                      disabled={disabled}
-                      onClick={() => signInWithGoogle()}
-                      className="mb-5 w-full rounded-md py-2 pl-4 truncate border flex justify-center items-center space-x-2 hover:bg-custom-hovergray dark:hover:bg-gray-700 focus:outline-none disabled:opacity-75 disabled:pointer-events-none transition-colors"
-                    >
-                      <Image
-                        src="/img/google.svg"
-                        alt="Google"
-                        width={32}
-                        height={32}
-                      />
-                      <span>Sign {showSignIn ? "in" : "up"} with Google</span>
-                    </button>
+                    {invidationCode ? (
+                      <div class="mb-5 flex flex-col space-y-1">
+                        <label
+                          for="email"
+                          class="font-semibold text-[15px] text-black dark:text-white mb-1"
+                        >
+                          Personal promocode
+                        </label>
+                        <div class="flex-1">
+                          <div class="relative">
+                            <div class="w-full rounded-[10px] p-3.5 truncate border placeholder:text-custom-placeholder focus:outline-none transition disabled:opacity-75 disabled:cursor-not-allowed disabled:pointer-events-none border-custom-border text-custom-inputtext  bg-custom-inputbg">
+                              {invidationCode}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        disabled={disabled}
+                        onClick={() => signInWithGoogle()}
+                        className="mb-5 w-full rounded-md py-2 pl-4 truncate border flex justify-center items-center space-x-2 hover:bg-custom-hovergray dark:hover:bg-gray-700 focus:outline-none disabled:opacity-75 disabled:pointer-events-none transition-colors"
+                      >
+                        <Image
+                          src="/img/google.svg"
+                          alt="Google"
+                          width={32}
+                          height={32}
+                        />
+                        <span>Sign {showSignIn ? "in" : "up"} with Google</span>
+                      </button>
+                    )}
 
                     {/* Sign with email */}
                     <Formik

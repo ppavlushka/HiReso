@@ -7,6 +7,7 @@ import md5 from "md5";
 import { pushUserDataToMailchimp } from "lib/mailchimp";
 import { verifyRecaptchaV3Token } from "lib/recaptcha";
 import { sendVerificationRequest } from "lib/emails";
+import { addInvitationEmail, processInvitationUser } from "lib/invitations";
 import getUserCountryWithUpdate from "lib/country";
 
 export const authOptions = {
@@ -54,13 +55,27 @@ export default async function auth(req, res) {
       ...authOptions.callbacks,
       async signIn({ user, email }) {
         if (email?.verificationRequest) {
-          const { recaptchaToken } = req.body;
+          const {
+            recaptchaToken,
+            invidationCode,
+            email: emailAddress,
+          } = req.body;
           const isRecapchaOk = await verifyRecaptchaV3Token(
             recaptchaToken,
             "login"
           );
           if (!isRecapchaOk) {
             console.log("Recaptcha check failed for user:", user);
+          }
+          if (invidationCode) {
+            try {
+              await addInvitationEmail({
+                email: emailAddress,
+                code: invidationCode,
+              });
+            } catch (error) {
+              console.log("Error while checking invitation code:", error);
+            }
           }
           return isRecapchaOk;
         }
@@ -82,6 +97,17 @@ export default async function auth(req, res) {
 
         const { email } = user;
         console.log("New user:", user);
+
+        // process invitation, update new user quota if needed
+        try {
+          const quota = await processInvitationUser({ email });
+          if (quota) {
+            user.quota = quota;
+          }
+        } catch (error) {
+          console.log("Error while processing invitation user:", error);
+        }
+
         // send welcome email
         /* try {
           await sendWelcomeEmail(user);

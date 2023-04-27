@@ -45,6 +45,7 @@ const Layout = ({
   isHome = false,
   leftComponent,
   centerComponent,
+  invidationCode,
 }) => {
   //const router = useRouter();
 
@@ -52,7 +53,7 @@ const Layout = ({
   const user = session?.user;
   const isLoadingUser = status === "loading";
 
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(!!invidationCode);
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [showSignIn] = useState(true);
 
@@ -209,6 +210,7 @@ const Layout = ({
           show={showModal}
           onClose={closeModal}
           showSignIn={showSignIn}
+          invidationCode={invidationCode}
         />
         <LimitModal show={showLimitModal} onClose={closeLimitModal} />
       </div>

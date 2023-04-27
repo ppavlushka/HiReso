@@ -67,6 +67,14 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Invitation {
+  id     Int       @id @default(autoincrement())
+  code   String    @unique
+  usedAt DateTime? @map("used_at")
+  userId String?   @map("user_id")
+  email  String?
+}
+
 // model UserData {
 //   id    String  @id @default(cuid())
 //   name  String?
