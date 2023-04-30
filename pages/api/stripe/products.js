@@ -21,23 +21,14 @@ export default async function handler(req, res) {
       }));
     // get user subscription
     // eslint-disable-next-line no-undef
-    const [subscription, prices, products] = await Promise.all([
+    const [subscription, prices] = await Promise.all([
       user &&
         user.subscriptionId &&
         stripe.subscriptions.retrieve(user.subscriptionId),
-      stripe.prices.list({ active: true }),
-      stripe.products.list({ active: true }),
+      stripe.prices.list({ active: true, expand: ["data.product"] }),
     ]);
     res.status(200).json({
-      prices: prices.data
-        .map((price) => ({
-          ...price,
-          product: products.data.find(
-            (product) => product.id === price.product
-          ),
-        }))
-        .filter((price) => price.product),
-      products: products.data,
+      prices: prices.data.filter((price) => price?.product?.active),
       subscription,
     });
   } catch (error) {
