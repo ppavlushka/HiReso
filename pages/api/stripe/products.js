@@ -29,10 +29,14 @@ export default async function handler(req, res) {
       stripe.products.list({ active: true }),
     ]);
     res.status(200).json({
-      prices: prices.data.map((price) => ({
-        ...price,
-        product: products.data.find((product) => product.id === price.product),
-      })),
+      prices: prices.data
+        .map((price) => ({
+          ...price,
+          product: products.data.find(
+            (product) => product.id === price.product
+          ),
+        }))
+        .filter((price) => price.product),
       products: products.data,
       subscription,
     });
