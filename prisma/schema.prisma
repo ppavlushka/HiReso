@@ -70,6 +70,7 @@ model VerificationToken {
 model Invitation {
   id     Int       @id @default(autoincrement())
   code   String    @unique
+  quota  Int       @default(100) @map("quota")
   usedAt DateTime? @map("used_at")
   userId String?   @map("user_id")
   email  String?

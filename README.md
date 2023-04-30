@@ -1,16 +1,59 @@
 # HiReso
 
-## ToDos
+Web app built with Next.js and TailwindCSS to display high resolution images.
 
-    - [*] Add upscale to search results in popover
-    - [*] Add proxy for upscaled images
-    - [*] Set limit of 1500px for upscaled images
-    - [*] Fix login from wrong provider for same email and add error message on login error
-    - [*] Show modal with link to billing page when user tries to upload more images than allowed
-    - [ ] Check stripe webhook for payment on server
-    - [*] Implement design for billing page
-    - [ ] Secure image search API
-    - [ ] Add image upload to search form (with the whole page as a dropzone)
-    - [*] Turn off welcome email sending
+## Installation
 
-[Example callback ULR](https://serp-mvp-progand.vercel.app/?callbackUrl=https%3A%2F%2Fserp-mvp-progand.vercel.app%2F%3FcallbackUrl%3Dhttps%253A%252F%252Fserp-mvp-progand.vercel.app%252F%253FcallbackUrl%253Dhttps%25253A%25252F%25252Fserp-mvp-progand.vercel.app%25252F%2526error%253DOAuthAccountNotLinked%2523%26error%3DOAuthAccountNotLinked%23&error=OAuthAccountNotLinked#)
+Install dependencies:
+
+```bash
+npm install
+# or
+yarn
+```
+
+Add environment variables to `.env` file (see `.env.example`)
+
+## Database
+
+Build Prisma client:
+
+```bash
+npm run prisma:generate
+# or
+yarn prisma:generate
+```
+
+Push data schema to database:
+
+```bash
+npm run prisma:push
+# or
+yarn prisma:push
+```
+
+## Development
+
+Run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+## Production
+
+Build for production:
+
+```bash
+npm run build
+# or
+yarn build
+```
+
+## Built With
+
+- [Next.js](https://nextjs.org/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [React](https://reactjs.org/)

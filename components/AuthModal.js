@@ -256,16 +256,16 @@ const AuthModal = ({
                   <div className="">
                     {/* Sign with Google */}
                     {invidationCode ? (
-                      <div class="mb-5 flex flex-col space-y-1">
+                      <div className="mb-5 flex flex-col space-y-1">
                         <label
                           for="email"
-                          class="font-semibold text-[15px] text-black dark:text-white mb-1"
+                          className="font-semibold text-[15px] text-black dark:text-white mb-1"
                         >
                           Personal promocode
                         </label>
-                        <div class="flex-1">
-                          <div class="relative">
-                            <div class="w-full rounded-[10px] p-3.5 truncate border placeholder:text-custom-placeholder focus:outline-none transition disabled:opacity-75 disabled:cursor-not-allowed disabled:pointer-events-none border-custom-border text-custom-inputtext  bg-custom-inputbg">
+                        <div className="flex-1">
+                          <div className="relative">
+                            <div className="w-full rounded-[10px] p-3.5 truncate border placeholder:text-custom-placeholder focus:outline-none transition disabled:opacity-75 disabled:cursor-not-allowed disabled:pointer-events-none border-custom-border text-custom-inputtext  bg-custom-inputbg">
                               {invidationCode}
                             </div>
                           </div>
