@@ -3,7 +3,7 @@ import Head from "next/head";
 import Script from "next/script";
 
 function CustomHead() {
-  const siteTitle = "HiReso - Search for similar images";
+  const siteTitle = "hiReso: AI-Powered Photo Search Engine";
   const gtagId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   return (
     <>
