@@ -4,7 +4,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/outline";
 
 export default function UpscaleForm({
-  url,
+  image,
   isUpscaling,
   onSubmit = () => {},
   className = "",
@@ -15,7 +15,7 @@ export default function UpscaleForm({
   const handleSubmit = (e) => {
     e.preventDefault();
     // call the upscaler function
-    onSubmit({ scale, url });
+    onSubmit({ scale, image });
   };
 
   // if the form is compact, return @headlessui/react dropdown with scale options
@@ -59,7 +59,7 @@ export default function UpscaleForm({
                       className={`${
                         active ? "bg-custom-hoverblue text-white" : ""
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                      onClick={() => onSubmit({ scale: i, url })}
+                      onClick={() => onSubmit({ scale: i, image })}
                     >
                       Enlarge {i}x
                     </button>

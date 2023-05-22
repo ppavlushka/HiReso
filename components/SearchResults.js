@@ -63,6 +63,7 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
     try {
       const response = await track(images);
       setHashes(response?.hashes || null);
+      return response;
     } catch (error) {
       setActiveImage(null);
       const message =
@@ -110,15 +111,22 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
     link: hashes && hashes[image.hash],
   }));
 
-  const handleUpscale = async ({ url, scale }) => {
+  const handleUpscale = async ({ image, scale }) => {
     toast.dismiss();
     if (!canDownload) {
       return showLimitMessage();
     }
-    setIsUpscaling(true);
     try {
+      let localHashes = hashes;
+      if (!hashes) {
+        // decode image urls first
+        const response = await track(images);
+        setHashes(response?.hashes || null);
+        localHashes = response?.hashes;
+      }
+      setIsUpscaling(true);
       const response = await axios.post("/api/predictions", {
-        url,
+        url: image.link || localHashes[image.hash],
         scale,
       });
       if (!response.data.success) {
@@ -143,7 +151,6 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
         throw new Error("Failed to upscale image.");
       } else {
         toast.success("Upscaling completed!");
-        trackIfNeeded();
       }
     } catch (error) {
       toast.error(error?.message || "Something went wrong");
@@ -175,7 +182,7 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
         <UpscaleForm
           isUpscaling={isUpscaling}
           onSubmit={handleUpscale}
-          url={searchUrl}
+          image={{ link: searchUrl }}
           popoverButtonClass={popoverButtonClass}
         />
 
@@ -253,7 +260,7 @@ const SearchResults = ({ searchUrl, images, limit = 6 }) => {
                             <UpscaleForm
                               isUpscaling={isUpscaling}
                               onSubmit={handleUpscale}
-                              url={image.link}
+                              image={image}
                               isCompact={true}
                               popoverButtonClass={popoverButtonClass}
                             />
